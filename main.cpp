@@ -26,13 +26,8 @@ void sig_winch(int sig)
     needs_resize = 1;
 }
 
-int main(int argc, char* argv[])
+void set_handlers()
 {
-    int err = 0;
-
-    setlocale(LC_CTYPE, "");
-    setlocale(LC_COLLATE, "");
-
     struct sigaction act;
 
     sigemptyset(&act.sa_mask);
@@ -55,11 +50,38 @@ int main(int argc, char* argv[])
     act.sa_flags = 0;
     act.sa_handler = sig_winch;
     sigaction(SIGWINCH, &act, nullptr);
+}
 
-    Audio aud {};
+int main(int argc, char* argv[])
+{
+    setlocale(LC_CTYPE, "");
+    setlocale(LC_COLLATE, "");
 
-    Curses cur {};
-    cur.main_loop();
+    set_handlers();
 
-    return err;
+    Audio aud;
+
+    Curses cur;
+
+    using clock = std::chrono::steady_clock;
+    clock::duration timer = clock::duration::zero();
+
+    cur.say_hello();
+    while (!needs_shutdown) {
+        auto start = clock::now();
+
+        cur.getkey();
+
+        using namespace std::chrono_literals;
+        if (timer > 1s) {
+            cur.swap_pair();
+            cur.say_hello();
+
+            timer = clock::duration::zero();
+        }
+
+        timer += clock::now() - start;
+    }
+
+    return 0;
 }
