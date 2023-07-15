@@ -67,10 +67,15 @@ int main(int argc, char* argv[])
     clock::duration timer = clock::duration::zero();
 
     cur.say_hello();
+    cur.update_winsz();
     while (!needs_shutdown) {
         auto start = clock::now();
 
         cur.getkey();
+
+        if (needs_resize) {
+            cur.update_winsz();
+        }
 
         using namespace std::chrono_literals;
         if (timer > 1s) {

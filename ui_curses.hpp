@@ -3,6 +3,8 @@
 
 #include "event.hpp"
 
+#include <sys/ioctl.h>
+
 #include <chrono>
 
 class Curses {
@@ -16,11 +18,12 @@ public:
     void swap_pair();
 
     void getkey();
+    void update_winsz();
 
 private:
-    int pair = 1;
-
     NoteView nv;
+    struct winsize ws {};
+    int pair = 1;
 };
 
 #endif

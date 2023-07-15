@@ -1,7 +1,9 @@
 #include "ui_curses.hpp"
 #include "sig_flags.hpp"
+#include "chk_errno.hpp"
 
 #include <curses.h>
+#include <termios.h>
 
 Curses::Curses()
     : nv {"8", "522301"}
@@ -43,6 +45,11 @@ void Curses::swap_pair()
     } else {
         pair = 1;
     }
+}
+
+void Curses::update_winsz()
+{
+    chk_errno(ioctl(STDIN_FILENO, TIOCGWINSZ, &ws) == -1, "Curses::update_win");
 }
 
 Curses::~Curses() noexcept
