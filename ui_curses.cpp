@@ -25,7 +25,7 @@ void Curses::say_hello()
 {
     erase();
     attron(COLOR_PAIR(pair));
-    printw("%s", nv.str().c_str());
+    printw("%s %d %d", nv.str().c_str(), w(), h());
     refresh();
     attroff(COLOR_PAIR(pair));
 }

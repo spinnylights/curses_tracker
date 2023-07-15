@@ -66,8 +66,8 @@ int main(int argc, char* argv[])
     using clock = std::chrono::steady_clock;
     clock::duration timer = clock::duration::zero();
 
-    cur.say_hello();
     cur.update_winsz();
+    cur.say_hello();
     while (!needs_shutdown) {
         auto start = clock::now();
 
