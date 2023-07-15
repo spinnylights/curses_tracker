@@ -1,6 +1,6 @@
 CPPFLAGS := -std=c++17 $(shell pkg-config --cflags --libs ncurses sdl2)
 
-curses_tracker: main.o sdl_util.o ui_curses.o audio_sdl.o event.o check_errno.o
+curses_tracker: main.o sdl_util.o ui_curses.o audio_sdl.o event.o chk_errno.o
 	c++ -o $@ $(CPPFLAGS) $^
 
 main.o: main.cpp
@@ -18,7 +18,7 @@ audio_sdl.o: audio_sdl.cpp audio_sdl.hpp
 event.o: event.cpp event.hpp
 	c++ -c -o $@ $(CPPFLAGS) $<
 
-check_errno.o: check_errno.cpp check_errno.hpp
+chk_errno.o: chk_errno.cpp chk_errno.hpp
 	c++ -c -o $@ $(CPPFLAGS) $<
 
 .PHONY: clean
