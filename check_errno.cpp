@@ -1,8 +1,10 @@
 #include "check_errno.hpp"
 
-void chk_errno(std::string msg)
+void chk_errno(bool err, std::string msg)
 {
-    std::stringstream s;
-    s << "ERROR: " << strerror(errno) << " <" << msg << ">\n";
-    throw std::runtime_error(s.str());
+    if (err){
+        std::stringstream s;
+        s << "ERROR: " << strerror(errno) << " <" << msg << ">\n";
+        throw std::runtime_error(s.str());
+    }
 }

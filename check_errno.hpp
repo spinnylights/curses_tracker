@@ -6,6 +6,6 @@
 #include<sstream>
 #include<stdexcept>
  
-void chk_errno(std::string msg = "");
+void chk_errno(bool err, std::string msg = "");
 
 #endif
