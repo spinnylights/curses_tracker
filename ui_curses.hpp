@@ -2,6 +2,7 @@
 #define Gc8dac77ce0245418b9092442d2fc608
 
 #include "event.hpp"
+#include "audio_sdl.hpp"
 
 #include <sys/ioctl.h>
 
@@ -15,7 +16,7 @@ public:
     ~Curses() noexcept;
 
     void main_loop();
-    void say_hello();
+    void say_hello(const Audio& aud);
     void swap_pair();
 
     void getkey();

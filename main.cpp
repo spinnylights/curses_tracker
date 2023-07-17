@@ -56,11 +56,11 @@ int main(int argc, char* argv[])
     using clock = std::chrono::steady_clock;
     clock::duration timer = clock::duration::zero();
 
-    cur.say_hello();
+    cur.say_hello(aud);
     while (!needs_shutdown) {
         auto start = clock::now();
 
-        cur.say_hello();
+        cur.say_hello(aud);
 
         cur.getkey();
 

@@ -11,6 +11,7 @@ Curses::Curses()
 
     start_color();
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_color(20, 1000, 350, 150);
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
     init_pair(3, COLOR_CYAN, COLOR_BLACK);
 
@@ -26,13 +27,13 @@ Curses::Curses()
 const std::string scoreline1 = "8.25 AORD";
 const std::string scoreline2 = "7.05 A";
 
-void Curses::say_hello()
+void Curses::say_hello(const Audio& aud)
 {
     werase(win);
 
     wattron(win, COLOR_PAIR(1));
     box(win, 0, 0);
-    wprintw(win, "%d%c", w(), key);
+    wprintw(win, "%dx%d/%c/%d", w(), h(), key, aud.sr());
 
     unsigned lrwidth = scoreline1.length() + 4;
     unsigned ledge = 1;
