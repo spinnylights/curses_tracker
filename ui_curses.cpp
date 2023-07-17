@@ -33,8 +33,6 @@ void Curses::say_hello(const Audio& aud)
 
     wattron(win, COLOR_PAIR(1));
     box(win, 0, 0);
-    wprintw(win, "%dx%d/%c/%d/%0.5f",
-            w(), h(), key, aud.sr(), Note::edo_pitch(8, 40, 0.5));
 
     unsigned lrwidth = scoreline1.length() + 4;
     unsigned ledge = 1;
@@ -84,6 +82,13 @@ void Curses::say_hello(const Audio& aud)
         ledge = redge + 1;
         redge = lrwidth + ledge;
     }
+
+    wmove(win, 0, 0);
+    Note note {8, 40, 0.5};
+    //std::string frac_s = std::to_string(note.frac());
+    std::string frac_s = note.pch();
+    wprintw(win, "%dx%d/%c/%d/%0.5f/%s",
+            w(), h(), key, aud.sr(), note.freq(), frac_s.c_str());
 
     wrefresh(win);
 }

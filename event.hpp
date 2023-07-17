@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <array>
+#include <sstream>
 
 class Event {
 public:
@@ -18,7 +19,7 @@ protected:
     pos_t position = 0;
 };
 
-class Note : public Event {
+class Note {
 public:
     typedef uint_fast16_t octave_t;
     typedef uint_fast16_t pc_t;
@@ -39,12 +40,14 @@ public:
     static freq_t edo_pitch(octave_t, pc_t, frac_t);
 
     Note() = default;
-    Note(pos_t, octave_t, pc_t, frac_t);
+    Note(octave_t, pc_t, frac_t);
 
     octave_t octave() const { return oct; }
     pc_t     pitchc() const { return pc; }
     frac_t   frac()   const { return fr; }
     freq_t   freq()   const { return hz; }
+
+    std::string pch() const;
 
     ~Note() = default;
 

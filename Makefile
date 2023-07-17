@@ -9,7 +9,7 @@ main.o: main.cpp
 sdl_util.o: sdl_util.cpp sdl_util.hpp
 	c++ -c -o $@ $(CPPFLAGS) $<
 
-ui_curses.o: ui_curses.cpp ui_curses.hpp
+ui_curses.o: ui_curses.cpp ui_curses.hpp event.o
 	c++ -c -o $@ $(CPPFLAGS) $<
 
 audio_sdl.o: audio_sdl.cpp audio_sdl.hpp

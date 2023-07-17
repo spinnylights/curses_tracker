@@ -29,8 +29,6 @@ public:
     void h(unsigned short n) { ws.ws_row = n; }
 
 private:
-
-private:
     WINDOW* win = nullptr;
     struct winsize ws {};
     int pair = 1;

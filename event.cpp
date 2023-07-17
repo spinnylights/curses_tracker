@@ -5,11 +5,9 @@
 #include <string>
 #include <sstream>
 
-Note::Note(pos_t p, octave_t octave, pc_t pitchc, frac_t frac)
-    : oct {octave}, pc {pitchc}, fr {frac}
-{
-    position = p;
-}
+Note::Note(octave_t octave, pc_t pitchc, frac_t frac)
+    : oct {octave}, pc {pitchc}, fr {frac}, hz {edo_pitch(octave, pitchc, frac)}
+{}
 
 const std::array<Note::freq_t, Note::steps_cnt> Note::edo_pitches = []{
     std::array<freq_t, steps_cnt> ep {};
@@ -38,6 +36,15 @@ Note::freq_t Note::edo_pitch(octave_t o, pc_t p, frac_t f)
         auto ceil  = edo_pitches.at(ndx + 1);
         return floor + f*(ceil - floor);
     }
+}
+
+std::string Note::pch() const
+{
+    std::array<char, 18> fs;
+    std::snprintf(fs.data(), fs.size(), "%.15g", fr);
+    std::stringstream s;
+    s << oct << "." << pc << std::string_view(fs.data() + 2, fs.size() - 2);
+    return s.str();
 }
 
 //NoteView::NoteView(std::string octave, std::string pcfrac)
