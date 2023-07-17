@@ -23,10 +23,16 @@ public:
     unsigned short w() { return ws.ws_col; }
     unsigned short h() { return ws.ws_row; }
 
+    void w(unsigned short n) { ws.ws_col = n; }
+    void h(unsigned short n) { ws.ws_row = n; }
+
 private:
     NoteView nv;
+
+private:
     struct winsize ws {};
     int pair = 1;
+    int key = ' ';
 };
 
 #endif

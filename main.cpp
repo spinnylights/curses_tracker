@@ -21,11 +21,6 @@ void sig_shutdown(int sig)
     needs_shutdown = 1;
 }
 
-void sig_winch(int sig)
-{
-    needs_resize = 1;
-}
-
 void set_handlers()
 {
     struct sigaction act;
@@ -45,11 +40,6 @@ void set_handlers()
     act.sa_flags = 0;
     act.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &act, nullptr);
-
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = 0;
-    act.sa_handler = sig_winch;
-    sigaction(SIGWINCH, &act, nullptr);
 }
 
 int main(int argc, char* argv[])
@@ -71,11 +61,9 @@ int main(int argc, char* argv[])
     while (!needs_shutdown) {
         auto start = clock::now();
 
-        cur.getkey();
+        cur.say_hello();
 
-        if (needs_resize) {
-            cur.update_winsz();
-        }
+        cur.getkey();
 
         using namespace std::chrono_literals;
         if (timer > 1s) {

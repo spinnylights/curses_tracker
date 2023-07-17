@@ -24,17 +24,25 @@ Curses::Curses()
 void Curses::say_hello()
 {
     erase();
+
     attron(COLOR_PAIR(pair));
-    printw("%s %d %d", nv.str().c_str(), w(), h());
-    refresh();
+    box(stdscr, '*', '*');
+    printw("%d%c", w(), key);
     attroff(COLOR_PAIR(pair));
+
+    refresh();
 }
 
 void Curses::getkey()
 {
-    auto key = getch();
-    if (key != ERR && key != 0) {
+    key = getch();
+
+    if (key == 'q') {
         needs_shutdown = 1;
+    }
+
+    if (key == KEY_RESIZE) {
+        update_winsz();
     }
 }
 
