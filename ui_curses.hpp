@@ -6,6 +6,7 @@
 #include <sys/ioctl.h>
 
 #include <chrono>
+#include <curses.h>
 
 class Curses {
 public:
@@ -30,6 +31,7 @@ private:
     NoteView nv;
 
 private:
+    WINDOW* win = nullptr;
     struct winsize ws {};
     int pair = 1;
     int key = ' ';

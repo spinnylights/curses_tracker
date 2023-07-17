@@ -56,7 +56,6 @@ int main(int argc, char* argv[])
     using clock = std::chrono::steady_clock;
     clock::duration timer = clock::duration::zero();
 
-    cur.update_winsz();
     cur.say_hello();
     while (!needs_shutdown) {
         auto start = clock::now();
@@ -65,15 +64,15 @@ int main(int argc, char* argv[])
 
         cur.getkey();
 
-        using namespace std::chrono_literals;
-        if (timer > 1s) {
-            cur.swap_pair();
-            cur.say_hello();
+        //using namespace std::chrono_literals;
+        //if (timer > 1s) {
+        //    cur.swap_pair();
+        //    cur.say_hello();
 
-            timer = clock::duration::zero();
-        }
+        //    timer = clock::duration::zero();
+        //}
 
-        timer += clock::now() - start;
+        //timer += clock::now() - start;
     }
 
     return 0;
