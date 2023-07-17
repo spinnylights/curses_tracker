@@ -29,7 +29,6 @@ public:
     void h(unsigned short n) { ws.ws_row = n; }
 
 private:
-    NoteView nv;
 
 private:
     WINDOW* win = nullptr;

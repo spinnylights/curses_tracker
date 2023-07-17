@@ -1,11 +1,11 @@
 #include "ui_curses.hpp"
 #include "sig_flags.hpp"
 #include "chk_errno.hpp"
+#include "event.hpp"
 
 #include <termios.h>
 
 Curses::Curses()
-    : nv {"8", "522301"}
 {
     initscr();
 
@@ -33,7 +33,8 @@ void Curses::say_hello(const Audio& aud)
 
     wattron(win, COLOR_PAIR(1));
     box(win, 0, 0);
-    wprintw(win, "%dx%d/%c/%d", w(), h(), key, aud.sr());
+    wprintw(win, "%dx%d/%c/%d/%0.5f",
+            w(), h(), key, aud.sr(), Note::edo_pitch(8, 40, 0.5));
 
     unsigned lrwidth = scoreline1.length() + 4;
     unsigned ledge = 1;
