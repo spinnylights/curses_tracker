@@ -24,9 +24,6 @@ public:
         void operator()(stmt*);
     };
 
-    //std::unordered_map<stmt_handle_t, SQLStatement> stmts = {};
-    //std::unordered_map<stmt_handle_t, stmt_up> stmts = {};
-
     typedef std::unique_ptr<stmt, delete_stmt> stmt_up;
     typedef std::unordered_map<stmt_src, stmt_up> stmts_col;
 
@@ -274,12 +271,6 @@ public:
     Statement prep_stmt(std::string stmt);
 
     id_t last_id() { return sqlite3_last_insert_rowid(db_p); }
-
-    //void step_stmt(stmt_handle_t);
-
-    //bool has_data(stmt_handle_t);
-
-    //void bind(stmt_handle_t, int sql_param_ndx, const void* blob_data, int sz);
 
 private:
     sqlite3* db_p = nullptr;

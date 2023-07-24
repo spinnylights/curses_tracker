@@ -37,7 +37,6 @@ public:
             auto right = c.get(read_head);
             read_head += ((dist/2) - epsilon);
 
-            //auto deriv_estim = (right - left) / dist;
             auto deriv_estim = (right - left) / (epsilon*2);
             auto avg         = (right + left) / 2.0;
 
@@ -53,18 +52,11 @@ public:
             chtype ch;
             if (dir == up && last_dir == down) {
                 wmove(win, cell_h_ndx, i - 1);
-                //waddch(win, 'v');
-                //ch = 'v';
                 waddch(win, '.');
-                ch = ',';
-                //ch = ',';
             } else if (dir == down && last_dir == up) {
                 wmove(win, cell_h_ndx, i - 1);
-                //waddch(win, '^');
-                //ch = '^';
                 waddch(win, '\'');
                 ch = '`';
-                //ch = '`';
             } else if (deriv_estim > 5.0) {
                 ch = ACS_UARROW;
             } else if (deriv_estim > 0.5) {

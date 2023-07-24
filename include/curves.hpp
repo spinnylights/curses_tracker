@@ -26,28 +26,6 @@ public:
         return curves->get(id);
     }
 
-    //std::shared_ptr<const Curve> getp(curves_col::size_type ndx) const
-    //{
-    //    return curves.at(ndx);
-    //}
-
-    //void update(curves_col::size_type ndx, void(*ufn)(std::shared_ptr<Curve>))
-    //{
-    //    ufn(curves.at(ndx));
-    //    // update db
-    //}
-
-    //void erase(curves_col::size_type ndx)
-    //{
-    //    curves.erase(curves.begin() + ndx);
-    //    // update db
-    //}
-
-    //curves_col::size_type cnt()
-    //{
-    //    return curves.size();
-    //}
-
 private:
     curves_col curves;
 };

@@ -45,24 +45,6 @@ DB::Statement DB::prep_stmt(stmt_src src)
     return {stmts_p, src};
 }
 
-//DB::stmt_handle_t DB::next_stmt_handle()
-//{
-//    stmt_handle_t limit = next_stmt_h - 1;
-//    for (; next_stmt_h != limit; ++next_stmt_h) {
-//        if (stmts_p->count(next_stmt_h) == 0) {
-//            return next_stmt_h;
-//        }
-//    }
-//
-//    throw runtime_error("no sql statement handles remain");
-//}
-
-//void DB::step_stmt(stmt_handle_t h)
-//{
-//    check_err<step_stmt_error>(sqlite3_step(stmts.at(h).p),
-//                               stmts.at(h).source());
-//}
-
 void DB::delete_stmt::operator()(sqlite3_stmt* p)
 {
     // this returns an error code if the most recent evaluation of the statement
@@ -70,15 +52,3 @@ void DB::delete_stmt::operator()(sqlite3_stmt* p)
     // in its destructor
     sqlite3_finalize(p);
 }
-
-//bool DB::has_data(stmt_handle_t h)
-//{
-//    return (sqlite3_data_count(stmts.at(h).p) != 0);
-//}
-
-//void DB::bind(stmt_handle_t, int sql_param_ndx, const void* blob_data, int sz)
-//{
-//    // sqlite3_bind_blob(sqlite3_stmt*, int, const void*, int n, void(*)(void*));
-//    // sqlite3_bind_blob(sqlite3_stmt*, sql_param_ndx, blob_data, sz, SQLITE_TRANSIENT);
-//}
-

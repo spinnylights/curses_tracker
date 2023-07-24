@@ -124,11 +124,6 @@ public:
                 saw += (std::cos(basic_freq*j)/j);
             }
             table[i] = saw;
-            //table[i] =
-            //    std::sin(basic_freq)
-            //    - std::sin(basic_freq*3.7)
-            //    - std::cos(basic_freq*0.3)
-            //    ;
         }
 
 //        for (auto& v : table) {
@@ -154,13 +149,6 @@ public:
 
         return *this;
     }
-
-    //std::string name() const { return nme; }
-    //void name(std::string nnme) { nme = nnme; } /* maybe...the db will need to
-    //                                               know if this changes */
-
-    //id_t id() const { return dbid; }
-    //void id(id_t ndbid) { dbid = ndbid; }
 
     /* be careful using this pointer
      *
@@ -190,13 +178,6 @@ public:
             table.at(static_cast<decltype(tab_lenf)>(std::ceil(tab_dist)));
         seek_t rel_dist = tab_dist - left_ndx; 
         return left + rel_dist*(right - left);
-
-        //auto ndx =
-        //    static_cast<decltype(tab_len)>(std::round(read_head * tab_lenf));
-
-        //if (ndx >= tab_len) { ndx = tab_len - 1; }
-
-        //return table.at(ndx);
     }
 
 public:
