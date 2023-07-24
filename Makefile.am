@@ -13,5 +13,7 @@ curses_tracker_SOURCES = \
 	src/db.cpp \
 	src/curve_db.cpp \
 	src/curve.cpp \
+	src/curves.cpp \
+	src/curses_curve_view.cpp \
 	src/chk_errno.cpp \
 	src/audio_sdl.cpp

@@ -12,19 +12,11 @@ class Curves {
 public:
     typedef std::shared_ptr<CurveDB> curves_col;
 
-    Curves(std::filesystem::path db_path)
-        : curves {std::make_shared<CurveDB>(db_path)}
-    {}
+    Curves(std::filesystem::path db_path);
 
-    Curve newc(std::string name)
-    {
-        return {curves, name};
-    }
+    Curve newc(std::string name);
 
-    Curve get(DB::id_t id)
-    {
-        return curves->get(id);
-    }
+    Curve get(DB::id_t id);
 
 private:
     curves_col curves;

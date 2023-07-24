@@ -3,10 +3,32 @@
 
 #include <cstring>
 
-const std::string CurveDB::table_name = "curves";
-const std::string CurveDB::id_col     = "id";
-const std::string CurveDB::name_col   = "name";
-const std::string CurveDB::vals_col   = "vals";
+const std::string table_name = "curves";
+const std::string id_col     = "id";
+const std::string name_col   = "name";
+const std::string vals_col   = "vals";
+
+CurveDB::CurveDB(std::filesystem::path dbfile)
+    : DB(dbfile)
+{
+    auto check_table = prep_stmt("SELECT name FROM sqlite_master "
+                                 "WHERE type='table'"
+                                 " AND name='"
+                                 + table_name
+                                 + "';")
+                           .step();
+
+    if (!check_table.has_data()) {
+        prep_stmt("CREATE TABLE "
+                  + table_name
+                  + "("
+                  + id_col + " INTEGER PRIMARY KEY NOT NULL,"
+                  + name_col + " TEXT NOT NULL,"
+                  + vals_col + " BLOB"
+                  ");")
+            .step();
+    }
+}
 
 void CurveDB::emplace(Curve& c, int ndx)
 {

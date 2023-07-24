@@ -72,16 +72,9 @@ public:
      */
     static constexpr int         sz_bytes = tab_len * sizeof(entry_t);
 
-    Curve(std::shared_ptr<CurveDB> ndb, std::string nname = "")
-        : db {ndb},
-          name {nname}
-    {}
+    Curve(std::shared_ptr<CurveDB> ndb, std::string nname = "");
 
-    Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname = "")
-        : db {ndb},
-          id {nid},
-          name {nname}
-    {}
+    Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname = "");
 
     Curve() = default;
 
@@ -95,60 +88,11 @@ public:
      * transeg(3.0, -1.0)      -- starts at -1.0, goes quickly to 1.0
      * transeg(3.0, -1.0, 0.0) -- starts at -1.0, goes quickly to 0.0
      */
-    auto transeg(double speed    = 0.0,
+    Curve& transeg(double speed    = 0.0,
                  double startval = 0.0,
-                 double endval   = 1.0)
-    {
-        if (speed == 0.0) {
-            for (std::size_t i = 0; i < tab_len; ++i) {
-                table[i] = startval + (i/tab_lenf)*(endval - startval);
-            }
-        } else {
-            for (std::size_t i = 0; i < tab_len; ++i) {
-                double numer = (endval - startval)
-                               * (1.0 - std::exp(i*speed / (tab_len - 1)));
-                double denom = 1.0 - std::exp(speed);
-                table[i] = startval + numer / denom;
-            }
-        }
-        return *this;
-    }
+                 double endval   = 1.0);
 
-    auto sine()
-    {
-        for (std::size_t i = 0; i < tab_len; ++i) {
-            auto basic_freq = 2*M_PI*(i/tab_lenf);
-            decltype(basic_freq) saw = 0;
-            static constexpr short sawl = 20;
-            for (short j = 1; j < sawl; ++j) {
-                saw += (std::cos(basic_freq*j)/j);
-            }
-            table[i] = saw;
-        }
-
-//        for (auto& v : table) {
-//            bool neg = std::signbit(v);
-//            v = std::log(std::abs(v)) + 1;
-////            if (std::signbit(v)) {
-//            if (neg) {
-//                v *= -1;
-//            }
-//        }
-
-        auto max_mag =
-            std::abs(*std::max_element(table.begin(), table.end(), [](int a, int b)
-            {
-                return std::abs(a) < std::abs(b);
-            }));
-
-        if (max_mag > 1.0) {
-            for (auto& v : table) {
-                v /= max_mag;
-            }
-        }
-
-        return *this;
-    }
+    Curve& sine();
 
     /* be careful using this pointer
      *
@@ -160,25 +104,9 @@ public:
      */
     const double* data() const { return table.data(); }
 
-    auto save()
-    {
-        db->emplace(*this, id);
-        return *this;
-    }
+    Curve& save();
 
-    entry_t get(seek_t read_head) const
-    {
-        if (read_head > 1.0) { read_head = 1.0; }
-        if (read_head < 0.0) { read_head = 0.0; }
-
-        seek_t tab_dist = read_head * (tab_lenf - 1.0); 
-        auto left_ndx = static_cast<decltype(tab_lenf)>(std::floor(tab_dist));
-        entry_t left  = table.at(left_ndx);
-        entry_t right =
-            table.at(static_cast<decltype(tab_lenf)>(std::ceil(tab_dist)));
-        seek_t rel_dist = tab_dist - left_ndx; 
-        return left + rel_dist*(right - left);
-    }
+    entry_t get(seek_t read_head) const;
 
 public:
     std::string name = "";

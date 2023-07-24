@@ -30,110 +30,30 @@ public:
     typedef std::shared_ptr<stmts_col> stmts_col_p;
 
     struct Statement {
-        Statement(stmts_col_p instmts_p, stmt_src insrc)
-            : stmts_p {instmts_p},
-              src {insrc}
-        {};
+        Statement(stmts_col_p instmts_p, stmt_src insrc);
 
         // i don't think this is async-safe atm
-        void op(std::function<void(stmt*)> fn)
-        {
-            auto p = stmts_p->at(src).release();
-            fn(p);
-            stmts_p->at(src).reset(p);
-        }
+        void op(std::function<void(stmt*)> fn);
 
-        auto step()
-        {
-            op([this](auto p) {
-                check_err<step_stmt_error>(sqlite3_step(p), source());
-            });
-            bind_ndx = 1;
-            return *this;
-        }
+        struct Statement& step();
 
-        bool has_data()
-        {
-            bool out;
-            op([&out](auto p) {
-                out = (sqlite3_data_count(p) != 0);
-            });
-            return out;
-        }
+        bool has_data();
 
-        auto bind(const void* blob_data, int sz)
-        {
-            op([=](auto p) {
-               sqlite3_bind_blob(p,
-                                 bind_ndx++,
-                                 blob_data,
-                                 sz,
-                                 SQLITE_TRANSIENT);
-            });
-            return *this;
-        }
+        struct Statement& bind(const void* blob_data, int sz);
 
-        auto bind(int n)
-        {
-            op([=](auto p) {
-               sqlite3_bind_int(p, bind_ndx++, n);
-            });
-            return *this;
-        }
+        struct Statement& bind(int n);
 
-        auto bind(std::string text)
-        {
-            op([=](auto p) {
-               sqlite3_bind_text(p,
-                                 bind_ndx++,
-                                 text.c_str(),
-                                 text.size() + 1,
-                                 SQLITE_TRANSIENT);
-            });
-            return *this;
-        }
+        struct Statement& bind(std::string text);
 
-        auto col(int ndx, const double*& blob_p)
-        {
-            op([&](auto p) {
-               blob_p =
-                   reinterpret_cast<const double*>(sqlite3_column_blob(p, ndx));
-            });
-            return *this;
-        }
+        struct Statement& col(int ndx, const double*& blob_p);
 
-        auto col(int ndx, int64_t& n)
-        {
-            op([&](auto p) {
-               n = sqlite3_column_int64(p, ndx);
-            });
-            return *this;
-        }
+        struct Statement& col(int ndx, int64_t& n);
 
-        auto col(int ndx, std::string& s)
-        {
-            op([&](auto p) {
-               const unsigned char* s_p = sqlite3_column_text(p, ndx);
-               if (s_p) {
-                   s = std::string(reinterpret_cast<char*>(const_cast<unsigned char*>(s_p)));
-               }
-            });
-            return *this;
-        }
+        struct Statement& col(int ndx, std::string& s);
 
-        int col_sz(int ndx)
-        {
-            int out;
-            op([&](auto p) {
-               out = sqlite3_column_bytes(p, ndx);
-            });
-            return out;
-        }
+        int col_sz(int ndx);
 
-        std::string source() const
-        {
-            return src;
-        }
+        std::string source() const;
 
     private:
         stmts_col_p stmts_p;
@@ -143,62 +63,34 @@ public:
 
     class sqlite_error : public runtime_error {
     public:
-        std::string sqlite_errmsg(int sqlite_errcode,
-                                  std::string action,
-                                  std::string extra = "")
-        {
-            std::stringstream s;
-
-            s << "sqlite3 failed"
-              << " to " << action
-              << ": "
-              << sqlite3_errstr(sqlite_errcode)
-              << " (" << sqlite_errcode << ")";
-
-            if (!extra.empty()) {
-                s << "\n" << extra;
-            }
-
-            return s.str();
-        }
-
         sqlite_error(int sqlite_errcode,
                      std::string action,
-                     std::string extra = "")
-            : runtime_error {sqlite_errmsg(sqlite_errcode, action, extra)}
-        {}
+                     std::string extra = "");
+
+        std::string sqlite_errmsg(int sqlite_errcode,
+                                  std::string action,
+                                  std::string extra = "");
 
     };
 
     class open_db_error : public sqlite_error {
     public:
-        open_db_error(int sqlite_errcode, std::filesystem::path pth)
-            : sqlite_error {sqlite_errcode,
-                            "open the database at " + pth.string()}
-        {}
+        open_db_error(int sqlite_errcode, std::filesystem::path pth);
     };
 
     class stmt_error : public sqlite_error {
     public:
-        stmt_error(int sqlite_errcode, std::string action, std::string source)
-            : sqlite_error {sqlite_errcode,
-                            action + " a statement",
-                            "source: " + source}
-        {}
+        stmt_error(int sqlite_errcode, std::string action, std::string source);
     };
 
     class prep_stmt_error : public stmt_error {
     public:
-        prep_stmt_error(int sqlite_errcode, std::string source)
-            : stmt_error {sqlite_errcode, "prepare", source}
-        {}
+        prep_stmt_error(int sqlite_errcode, std::string source);
     };
 
     class step_stmt_error : public stmt_error {
     public:
-        step_stmt_error(int sqlite_errcode, std::string source)
-            : stmt_error {sqlite_errcode, "evaluate", source}
-        {}
+        step_stmt_error(int sqlite_errcode, std::string source);
     };
 
     template<typename T = sqlite_error>
