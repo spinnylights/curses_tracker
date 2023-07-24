@@ -11,7 +11,7 @@ AC_CONFIG_SRCDIR([src/curve.cpp])
 # Checks for programs.
 AC_PROG_CXX
 
-AX_CXX_COMPILE_STDCXX17
+AX_CXX_COMPILE_STDCXX([17], [noext], [])
 
 # Checks for libraries.
 #
