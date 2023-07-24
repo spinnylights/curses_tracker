@@ -17,7 +17,7 @@ Curses::Curses()
 
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
-    halfdelay(5);
+    halfdelay(7);
     noecho();
     curs_set(0);
 
