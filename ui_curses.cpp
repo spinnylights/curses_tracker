@@ -1,7 +1,7 @@
 #include "ui_curses.hpp"
 #include "sig_flags.hpp"
 #include "chk_errno.hpp"
-#include "event.hpp"
+#include "note.hpp"
 
 #include <termios.h>
 
@@ -63,6 +63,8 @@ void Curses::say_hello(const Audio& aud)
             wprintw(win, "%03X", cnt);
             if (cnt % 3 == 0) {
                 wprintw(win, " %s", s.c_str());
+                waddch(win, ACS_UARROW);
+                waddch(win, ACS_DARROW);
             }
             if (cnt % 4 == 0) {
                 wattron(win, COLOR_PAIR(1));

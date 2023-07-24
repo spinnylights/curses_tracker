@@ -1,83 +1,70 @@
 #ifndef b3bdd72cefb34aed94103c3411dfea65
 #define b3bdd72cefb34aed94103c3411dfea65
 
-#include <cstdint>
-#include <cmath>
-#include <string>
-#include <array>
-#include <sstream>
+#include "instrument.hpp"
 
+/*
+ * an event consists of:
+ *     * a timeline position
+ *     * either a note or a natural number
+ *     * an instrument
+ *     * various parameter settings
+ *
+ *  the instrument determines note vs. natural number, and if natural number,
+ *  the instrument determines the bounds
+ *
+ *  the instrument also influences the parameters
+ *
+ *  maybe i should have this be a template, like for "float events" and
+ *  "unsigned events" or something
+ *
+ *  or, i might have pitchevent and trigevent
+ *
+ *  2/4
+ *  000 8.43 I AOR
+ *  001 8.39    -
+ *
+ *  4/8
+ *  000 8.43 I AOR
+ *  001
+ *  002 8.39    -
+ *  003
+ *
+ *  <0.00> len 0.25, pitched instr, 8 oct, 43 pc, params: amp [0.8],
+ *             offset [0.1], reverb [0.6 etc. etc.]
+ *  <0.50> len smthng::to_end, pitched instr, 8 oct, 39 pc, params:
+ *             amp [unchanged], offset [default (i.e. 0)], reverb [unchanged]
+ *
+ * therefore an event has a start time, a duration, a pitch or trig instrument,
+ *     a note if pitched and an index if trig, and a set (list?) of params
+ */
 class Event {
 public:
-    typedef unsigned long long pos_t;
+    typedef unsigned long long ticks_t;
 
     virtual ~Event() = default;
 
-    pos_t pos() const { return position; }
+    virtual ticks_t pos() const { return position; }
+    virtual ticks_t len() const { return dur; }
 
-protected:
-    pos_t position = 0;
-};
-
-class Note {
-public:
-    typedef uint_fast16_t octave_t;
-    typedef uint_fast16_t pc_t;
-    typedef double        frac_t;
-    typedef double        freq_t;
-
-    static constexpr pc_t   edo        = 53;
-    static constexpr freq_t base_pitch = 1.02197503906;
-
-    static constexpr octave_t octave_max = 14;
-    static constexpr pc_t     pc_max     = edo - 1;
-    static constexpr size_t   steps_cnt  = octave_max*edo + 17; // ~20913 Hz
-    static constexpr frac_t   frac_max   = UINT_FAST32_MAX;
-
-    static const std::array<freq_t, steps_cnt> edo_pitches;
-
-    static freq_t edo_pitch(octave_t, pc_t);
-    static freq_t edo_pitch(octave_t, pc_t, frac_t);
-
-    Note() = default;
-    Note(octave_t, pc_t, frac_t);
-
-    octave_t octave() const { return oct; }
-    pc_t     pitchc() const { return pc; }
-    frac_t   frac()   const { return fr; }
-    freq_t   freq()   const { return hz; }
-
-    std::string pch() const;
-
-    ~Note() = default;
+    /* these should probably go somewhere else
+     * maybe a sample rate class
+     */
+    virtual void sr(double sample_rate) { sampr = sample_rate; }
+    virtual double tick_len() const { return 1.0/sampr; }
 
 private:
-    octave_t oct;
-    pc_t     pc;
-    frac_t   fr;
-    freq_t   hz;
+    double sampr = 48000;
+    ticks_t position = 0;
+    ticks_t dur = 0;
 };
 
-//class NoteView {
-//public:
-//    NoteView(std::string octave, std::string pcfrac);
-//
-//    std::string str() const;
-//
-//private:
-//    static constexpr Note::pc_t pc_digits = []{
-//        Note::pc_t n = Note::edo;
-//        Note::pc_t cnt = 0;
-//
-//        do {
-//            n /= 10;
-//            ++cnt;
-//        } while (n != 0);
-//
-//        return cnt;
-//    }();
-//
-//    Note nt;
-//};
+class PitchEvent : public Event {
+    //PitchEvent()
+};
+
+class TrigEvent : public Event {
+
+};
 
 #endif
