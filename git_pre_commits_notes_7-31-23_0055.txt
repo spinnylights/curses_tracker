@@ -1,22 +1,24 @@
 a safe order:
 
-[fmt1]
-[fmt2]
+x[fmt1]
+x[fmt2]
 
-[cache]
+x[cache]
 
-[emplace] ->
-[blob] ->
-    [update] ->
-        [save] ->
-            [get] ->
-                [visuals]
+x[emplace] ->
+x[blob] ->
+x[db_p protected] ->
+x[curve constr] ->
+    x[update] ->
+        x[save] ->
+            x[get] ->
+                x[visuals]
 
-[sawl] ->
-    [visuals]
+x[sawl] ->
+    x[visuals]
 
-[newc no name] ->
-    [visuals]
+x[newc no name] ->
+    x[visuals]
 
 ***
 ===
@@ -25,6 +27,8 @@ curve.hpp
 
 ===
 
+[curve constr]
+
 before, you could make a curve via Curve(), Curve(db, name), or
 Curve(db, db_id, name)
 
@@ -32,6 +36,7 @@ now, you can make a curve via Curve(db), Curve(db, db_id),
 Curve(db, name), or Curve(db, db_id, name)
     i wonder if it's getting to the point where i should just
     have an args struct for constructing a Curve
+    the purpose of this is to leave out the name if desired
 
 ---
 
@@ -172,6 +177,8 @@ add blob_error classes—a general blob_error, and specialized
 open, write, read, and close blob errors
 
 ---
+
+[db_p protected]
 
 change DB::db_p from private to protected
 
