@@ -89,8 +89,8 @@ public:
      * transeg(3.0, -1.0, 0.0) -- starts at -1.0, goes quickly to 0.0
      */
     Curve& transeg(double speed    = 0.0,
-                 double startval = 0.0,
-                 double endval   = 1.0);
+                   double startval = 0.0,
+                   double endval   = 1.0);
 
     Curve& sine();
 
