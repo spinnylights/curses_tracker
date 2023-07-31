@@ -9,6 +9,11 @@ Curve Curves::newc(std::string name)
     return {curves, name};
 }
 
+Curve Curves::newc()
+{
+    return {curves};
+}
+
 Curve Curves::get(DB::id_t id)
 {
     Curve c {curves};

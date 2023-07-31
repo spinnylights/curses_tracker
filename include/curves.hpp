@@ -15,6 +15,7 @@ public:
     Curves(std::filesystem::path db_path);
 
     Curve newc(std::string name);
+    Curve newc();
 
     Curve get(DB::id_t id);
 
