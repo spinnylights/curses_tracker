@@ -94,7 +94,7 @@ public:
                    double startval = 0.0,
                    double endval   = 1.0);
 
-    Curve& sine();
+    Curve& sine(unsigned long sawl = 20);
 
     /* be careful using this pointer
      *

@@ -42,13 +42,13 @@ Curve& Curve::transeg(double speed,
     return *this;
 }
 
-Curve& Curve::sine()
+Curve& Curve::sine(unsigned long sawl)
 {
     for (std::size_t i = 0; i < tab_len; ++i) {
         auto basic_freq = 2*M_PI*(i/tab_lenf);
         decltype(basic_freq) saw = 0;
-        static constexpr short sawl = 20;
-        for (short j = 1; j < sawl; ++j) {
+        //static constexpr short sawl = 20;
+        for (unsigned long j = 1; j <= sawl; ++j) {
             saw += (std::cos(basic_freq*j)/j);
         }
         table[i] = saw;
