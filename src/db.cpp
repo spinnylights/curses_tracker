@@ -137,14 +137,16 @@ DB::Statement DB::prep_stmt(stmt_src src)
     stmt* stmtp;
     const char* z_tail;
 
-    check_err<prep_stmt_error>(sqlite3_prepare_v2(db_p,
-                                                  src.c_str(),
-                                                  src.length() + 1,
-                                                  &stmtp,
-                                                  &z_tail),
-                               src); 
+    if (stmts_p->count(src) == 0) {
+        check_err<prep_stmt_error>(sqlite3_prepare_v2(db_p,
+                                                      src.c_str(),
+                                                      src.length() + 1,
+                                                      &stmtp,
+                                                      &z_tail),
+                                   src);
 
-    stmts_p->emplace(src, stmtp);
+        stmts_p->emplace(src, stmtp);
+    }
 
     return {stmts_p, src};
 }
