@@ -83,6 +83,11 @@ public:
         stmt_error(int sqlite_errcode, std::string action, std::string source);
     };
 
+    class blob_error : public sqlite_error {
+    public:
+        blob_error(int sqlite_errcode, std::string action);
+    };
+
     class prep_stmt_error : public stmt_error {
     public:
         prep_stmt_error(int sqlite_errcode, std::string source);
@@ -91,6 +96,26 @@ public:
     class step_stmt_error : public stmt_error {
     public:
         step_stmt_error(int sqlite_errcode, std::string source);
+    };
+
+    class open_blob_error : public blob_error {
+    public:
+        open_blob_error(int sqlite_errcode);
+    };
+
+    class write_blob_error : public blob_error {
+    public:
+        write_blob_error(int sqlite_errcode);
+    };
+
+    class read_blob_error : public blob_error {
+    public:
+        read_blob_error(int sqlite_errcode);
+    };
+
+    class close_blob_error : public blob_error {
+    public:
+        close_blob_error(int sqlite_errcode);
     };
 
     template<typename T = sqlite_error>

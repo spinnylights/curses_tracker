@@ -197,10 +197,31 @@ DB::stmt_error::stmt_error(int sqlite_errcode,
                     "source: " + source}
 {}
 
+DB::blob_error::blob_error(int sqlite_errcode,
+                           std::string action)
+    : sqlite_error {sqlite_errcode, action +  " a blob"}
+{}
+
 DB::prep_stmt_error::prep_stmt_error(int sqlite_errcode, std::string source)
     : stmt_error {sqlite_errcode, "prepare", source}
 {}
 
 DB::step_stmt_error::step_stmt_error(int sqlite_errcode, std::string source)
     : stmt_error {sqlite_errcode, "evaluate", source}
+{}
+
+DB::open_blob_error::open_blob_error(int sqlite_errcode)
+    : blob_error {sqlite_errcode, "open"}
+{}
+
+DB::write_blob_error::write_blob_error(int sqlite_errcode)
+    : blob_error {sqlite_errcode, "write"}
+{}
+
+DB::read_blob_error::read_blob_error(int sqlite_errcode)
+    : blob_error {sqlite_errcode, "read"}
+{}
+
+DB::close_blob_error::close_blob_error(int sqlite_errcode)
+    : blob_error {sqlite_errcode, "close"}
 {}
