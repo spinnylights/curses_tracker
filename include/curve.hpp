@@ -72,6 +72,32 @@ public:
      */
     static constexpr int         sz_bytes = tab_len * sizeof(entry_t);
 
+    class CurveAlg {
+    public:
+        virtual void inner_process(Curve&,
+                                   std::size_t startpos,
+                                   std::size_t endpos) = 0;
+
+        void process(Curve&, double endpos = 1.0, double startpos = 0.0);
+    };
+
+    class Segs : public CurveAlg {
+    public:
+        Segs();
+        Segs(double speed);
+        Segs(double speed, double start);
+        Segs(double speed, double start, double end);
+
+        virtual void inner_process(Curve&,
+                                   std::size_t endpos,
+                                   std::size_t startpos) override;
+
+    private:
+        double speed    = 0.0;
+        double startval = 0.0;
+        double endval   = 1.0;
+    };
+
     Curve(std::shared_ptr<CurveDB> ndb);
 
     Curve(std::shared_ptr<CurveDB> ndb, std::string nname);

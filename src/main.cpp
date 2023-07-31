@@ -110,9 +110,24 @@ int main(int argc, char* argv[])
         unsigned long sawl = 1;
         cn2.sine(sawl).save();
 
-        auto cn3 = cs.newc()
-                     .transeg(0, -1, 1)
-                     .save();
+        std::vector<Curve::Segs> csegs = {
+             {0, -1},
+             {0, -1},
+        };
+
+        auto cn3 = cs.newc();
+        //             .transeg(0, -1, 1)
+        //             .save();
+        //segs.process(cn3);
+        Curve::CurveAlg& a = csegs[0];
+        double start = 0.0;
+        double dist = 0.5;
+        a.process(cn3, dist, start);
+        start += dist;
+        dist += dist;
+        a = csegs[1];
+        a.process(cn3, dist, start);
+        cn3.save();
 
         cur.say_hello(aud);
         while (!needs_shutdown) {
@@ -133,7 +148,7 @@ int main(int argc, char* argv[])
             //                      (LINES - mh)/2,
             //                      (COLS - mw)/2);
 
-            constexpr int div = 5;
+            constexpr int div = 1;
             CursesCurveView ccvn (cn3,
                                   60/div,
                                   ccv_w*2/div,

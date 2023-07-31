@@ -3,6 +3,62 @@
 
 #include <cmath>
 
+Curve::Segs::Segs()
+{}
+
+Curve::Segs::Segs(double nspeed)
+    : speed {nspeed}
+{}
+
+Curve::Segs::Segs(double nspeed, double nstartval)
+    : speed    {nspeed},
+      startval {nstartval}
+{}
+
+Curve::Segs::Segs(double nspeed, double nstartval, double nendval)
+    : speed    {nspeed},
+      startval {nstartval},
+      endval   {nendval}
+{}
+
+std::size_t scale_fpos(double fpos)
+{
+    if (fpos < 0.0) { fpos = 0.0; }
+    if (fpos > 1.0) { fpos = 1.0; }
+
+    return static_cast<std::size_t>(std::round(fpos * (Curve::tab_lenf)));
+}
+
+void Curve::CurveAlg::process(Curve& c, double endpos, double startpos)
+{
+    if (endpos < startpos) {
+        auto endmemo = endpos;
+        endpos = startpos;
+        startpos = endmemo;
+    }
+
+    this->inner_process(c, scale_fpos(endpos), scale_fpos(startpos));
+}
+
+void Curve::Segs::inner_process(Curve& c,
+                                std::size_t endpos,
+                                std::size_t startpos)
+{
+    if (speed == 0.0) {
+        double dist = endpos - startpos;
+        for (std::size_t i = startpos; i < endpos; ++i) {
+            c.table[i] = startval + ((i - startpos)/dist)*(endval - startval);
+        }
+    } else {
+        for (std::size_t i = startpos; i < endpos; ++i) {
+            double numer = (endval - startval)
+                           * (1.0 - std::exp(i*speed / (tab_len - 1)));
+            double denom = 1.0 - std::exp(speed);
+            c.table[i] = startval + numer / denom;
+        }
+    }
+}
+
 Curve::Curve(std::shared_ptr<CurveDB> ndb)
     : db {ndb}
 {}
