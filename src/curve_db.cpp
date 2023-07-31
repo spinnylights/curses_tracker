@@ -62,20 +62,76 @@ DB::id_t CurveDB::emplace(Curve& c, int ndx)
     return last_id();
 }
 
-Curve CurveDB::get(id_t id)
+void CurveDB::update(Curve& c)
 {
-    Curve c;
-    const double* vals_p;
+    auto curve_sz = std::remove_reference<decltype(c)>::type::sz_bytes;
+
+    std::string src = "UPDATE " + table_name
+                      + " SET " + name_col + "='?'"
+                      + " WHERE " + id_col +  "=?;";
+    prep_stmt(src)
+       .bind(c.name)
+       .bind(c.id)
+       .step();
+
+    sqlite3_blob* blob_p;
+
+    check_err<open_blob_error>(sqlite3_blob_open(db_p,
+                                            "main",
+                                            table_name.c_str(),
+                                            vals_col.c_str(),
+                                            c.id,
+                                            -1,
+                                            &blob_p));
+
+    check_err<write_blob_error>(sqlite3_blob_write(blob_p,
+                                                   c.data(),
+                                                   curve_sz,
+                                                   0));
+
+    check_err<close_blob_error>(sqlite3_blob_close(blob_p));
+}
+
+void CurveDB::get(Curve& c, id_t id)
+{
+    auto curve_sz = std::remove_reference<decltype(c)>::type::sz_bytes;
+    //const double* vals_p;
+
+    //auto select_c =
+    //    prep_stmt("SELECT " + id_col + "," + name_col + "," + vals_col +
+    //              " from " + table_name + ";")
+    //        .step()
+    //        .col(0, c.id)
+    //        .col(1, c.name)
+    //        .col(2, vals_p);
+
+    //std::memcpy(c.table.data(), vals_p, select_c.col_sz(2));
 
     auto select_c =
-        prep_stmt("SELECT " + id_col + "," + name_col + "," + vals_col +
-                  " from " + table_name + ";")
+        prep_stmt("SELECT " + name_col
+                  + " from " + table_name
+                  + " WHERE " + id_col + "=" + std::to_string(id) + ";")
             .step()
-            .col(0, c.id)
-            .col(1, c.name)
-            .col(2, vals_p);
+            .col(0, c.name);
+    c.id = id;
+    c.in_db = true;
 
-    std::memcpy(c.table.data(), vals_p, select_c.col_sz(2));
+    sqlite3_blob* blob_p;
 
-    return c;
+    check_err<open_blob_error>(sqlite3_blob_open(db_p,
+                                                "main",
+                                                table_name.c_str(),
+                                                vals_col.c_str(),
+                                                id,
+                                                -1,
+                                                &blob_p));
+
+    check_err<read_blob_error>(sqlite3_blob_read(blob_p,
+                                                 c.table.data(),
+                                                 curve_sz,
+                                                 0));
+
+    check_err<close_blob_error>(sqlite3_blob_close(blob_p));
+
+//    return c;
 }

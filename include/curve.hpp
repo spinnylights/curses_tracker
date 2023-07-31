@@ -117,8 +117,9 @@ public:
 
     std::array<entry_t, tab_len> table = {};
 
-private:
+    bool in_db = false;
 
+private:
     std::shared_ptr<CurveDB> db;
 };
 

@@ -14,7 +14,9 @@ public:
 
     DB::id_t emplace(Curve& c, int ndx);
 
-    Curve get(id_t id);
+    void update(Curve& c);
+
+    void get(Curve& c, id_t id);
 };
 
 #endif

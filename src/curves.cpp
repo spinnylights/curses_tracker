@@ -11,5 +11,7 @@ Curve Curves::newc(std::string name)
 
 Curve Curves::get(DB::id_t id)
 {
-    return curves->get(id);
+    Curve c {curves};
+    curves->get(c, id);
+    return c;
 }

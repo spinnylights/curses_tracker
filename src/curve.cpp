@@ -80,7 +80,12 @@ Curve& Curve::sine()
 
 Curve& Curve::save()
 {
-    db->emplace(*this, id);
+    if (in_db) {
+        db->update(*this);
+    } else {
+        id = db->emplace(*this, id);
+        in_db = true;
+    }
     return *this;
 }
 
