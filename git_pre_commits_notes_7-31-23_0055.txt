@@ -1,0 +1,229 @@
+a safe order:
+
+[fmt1]
+[fmt2]
+
+[cache]
+
+[emplace] ->
+[blob] ->
+    [update] ->
+        [save] ->
+            [get] ->
+                [visuals]
+
+[sawl] ->
+    [visuals]
+
+[newc no name] ->
+    [visuals]
+
+***
+===
+
+curve.hpp
+
+===
+
+before, you could make a curve via Curve(), Curve(db, name), or
+Curve(db, db_id, name)
+
+now, you can make a curve via Curve(db), Curve(db, db_id),
+Curve(db, name), or Curve(db, db_id, name)
+    i wonder if it's getting to the point where i should just
+    have an args struct for constructing a Curve
+
+---
+
+[fmt1]
+
+formatting fix
+
+---
+
+[sawl]
+
+change Curve& Curve::sin() to Curve& Curve::sin(unsigned long
+sawl = 20)
+
+---
+
+[save]
+
+add Curve::in_db
+
+===
+
+curve.cpp
+
+===
+
+[sawl]
+
+allow the caller of Curve::sine() to specify how many "cosine
+sawtooth" partials to add
+
+---
+
+[save]
+
+instead of just calling db->emplace(*this, id) in Curve::save(),
+call db->update(*this) if the curve is already in the db; use
+in_db to tell the difference
+
+===
+
+curve_db.hpp
+
+===
+
+[emplace]
+
+have CurveDB::emplace(curve, ndx) return a db_id instead of void
+
+---
+
+[update]
+
+add void CurveDB::update(curve&)
+
+--
+
+[get]
+
+change Curve CurveDB::get(id) to void CurveDB::get(curve&, id)
+    returning the db-row-derived curve data in the reference
+    instead
+
+===
+
+curve_db.cpp
+
+---
+
+[emplace]
+
+allow CurveDB::emplace(curve, ndx) to use the passed index if one
+is passed (i.e. if it's not DB::no_id), to allow sqlite to pick
+the id if it's not, and to return the id either way
+
+---
+
+[update]
+
+add void CurveDB::update(curve&)
+
+---
+
+[get]
+
+instead of using memcpy() to get the blob data for the curve in
+CurveDB::get(), use the sqlite3_blob interface, which seems to
+work better (more reliable/less erratic)
+
+===
+
+curve_slot.hpp
+
+---
+
+[fmt2]
+
+remove dangling whitespace
+
+===
+
+curves.hpp
+
+---
+
+[newc no name]
+
+change Curve Curves::newc(name) to Curve Curves::newc() (implying
+you can set the name after you get the curve)
+
+===
+
+curves.cpp
+
+---
+
+[newc no name]
+
+change Curve Curves::newc(name) to Curve Curves::newc() (implying
+you can set the name after you get the curve)
+
+---
+
+[get]
+
+change Curves::get(db_id) to first create a Curve and then fill
+its data from the db afterwards
+
+===
+
+db.hpp
+
+===
+
+[blob]
+
+add blob_error classes—a general blob_error, and specialized
+open, write, read, and close blob errors
+
+---
+
+change DB::db_p from private to protected
+
+===
+
+db.cpp
+
+===
+
+[cache]
+
+only prepare the statement if there isn't one with matching
+source code already in the database (actually use the cache in
+other words)
+
+---
+
+[blob]
+
+add blob_error classes—a general blob_error, and specialized
+open, write, read, and close blob errors
+
+===
+
+ui_curses.hpp
+
+---
+
+[visuals]
+
+add int Curses::flash_pair = 80
+
+===
+
+main.cpp
+
+---
+
+[visuals]
+
+um, it plays an animation of a "cosine sawtooth" being built up
+partial-by-partial, and shows a gently flashing w/ fade score
+line for when i need that effect later
+
+===
+
+ui_curses.cpp
+
+---
+
+[visuals]
+
+accomodate needs of main.cpp
+
+===
