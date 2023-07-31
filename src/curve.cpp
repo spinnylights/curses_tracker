@@ -3,18 +3,6 @@
 
 #include <cmath>
 
-Curve::Segs::Segs()
-{}
-
-Curve::Segs::Segs(double nspeed)
-    : speed {nspeed}
-{}
-
-Curve::Segs::Segs(double nspeed, double nstartval)
-    : speed    {nspeed},
-      startval {nstartval}
-{}
-
 Curve::Segs::Segs(double nspeed, double nstartval, double nendval)
     : speed    {nspeed},
       startval {nstartval},
@@ -56,6 +44,29 @@ void Curve::Segs::inner_process(Curve& c,
             double denom = 1.0 - std::exp(speed);
             c.table[i] = startval + numer / denom;
         }
+    }
+}
+
+Curve::Soid::Soid(double nharmon,
+                  double nphase,
+                  double nstrength,
+                  double noffset)
+    : harmon   {nharmon},
+      phase    {nphase},
+      strength {nstrength},
+      offset   {noffset}
+{}
+
+void Curve::Soid::inner_process(Curve& c,
+                                std::size_t endpos,
+                                std::size_t startpos)
+{
+    double dist = endpos - startpos;
+    for (std::size_t i = startpos; i < endpos; ++i) {
+        c.table[i] =
+            std::sin(2*M_PI*harmon*((i - startpos)/dist + phase))
+                * strength
+            + offset;
     }
 }
 

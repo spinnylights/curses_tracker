@@ -83,19 +83,34 @@ public:
 
     class Segs : public CurveAlg {
     public:
-        Segs();
-        Segs(double speed);
-        Segs(double speed, double start);
-        Segs(double speed, double start, double end);
+        Segs(double speed = 0.0, double startval = 0.0, double endval = 1.0);
 
         virtual void inner_process(Curve&,
                                    std::size_t endpos,
                                    std::size_t startpos) override;
 
     private:
-        double speed    = 0.0;
-        double startval = 0.0;
-        double endval   = 1.0;
+        double speed;
+        double startval;
+        double endval;
+    };
+
+    class Soid : public CurveAlg {
+    public:
+        Soid(double harmon   = 1.0,
+             double phase    = 0.0,
+             double strength = 1.0,
+             double offset   = 0.0);
+
+        virtual void inner_process(Curve&,
+                                   std::size_t endpos,
+                                   std::size_t startpos) override;
+
+    private:
+        double harmon;
+        double phase;
+        double strength;
+        double offset;
     };
 
     Curve(std::shared_ptr<CurveDB> ndb);
