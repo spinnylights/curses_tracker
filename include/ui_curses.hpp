@@ -28,6 +28,7 @@ public:
     void w(unsigned short n) { ws.ws_col = n; }
     void h(unsigned short n) { ws.ws_row = n; }
 
+    int flash_pair = 80;
 private:
     WINDOW* win = nullptr;
     struct winsize ws {};

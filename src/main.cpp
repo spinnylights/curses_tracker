@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
         //fs::path curves_db_path = config_dir / "curves.sqlite3";
         //Curves cs {curves_db_path};
         Curves cs {":memory:"};
-        auto ct = cs.newc("transeg")
+        auto ct = cs.newc()
 //                   .transeg();
 //                   .transeg(0.0, -1.0);
                    .transeg(-7.5, -1.0, 1.0);
@@ -93,15 +93,26 @@ int main(int argc, char* argv[])
         //Curve c {curves_db, "meow"};
         //c.transeg(3.0, -1.0);
         //c.save();
-        auto cn = cs.newc("sine")
+        auto cn = cs.newc()
                     .sine()
                     .save();
+
+        cn.transeg().save();
 
         auto cn_id = cn.id;
         auto cn2 = cs.get(cn_id);
 
         using clock = std::chrono::steady_clock;
-        clock::duration timer = clock::duration::zero();
+        clock::duration timer_anim = clock::duration::zero();
+        clock::duration timer_flash = clock::duration::zero();
+
+        bool flipped = false;
+        unsigned long sawl = 1;
+        cn2.sine(sawl).save();
+
+        auto cn3 = cs.newc()
+                     .transeg(0, -1, 1)
+                     .save();
 
         cur.say_hello(aud);
         while (!needs_shutdown) {
@@ -115,23 +126,51 @@ int main(int argc, char* argv[])
             //CursesCurveView ccvt (ct, 40, ccv_w, 10, 10);
             int mh = 60;
             int mw = ccv_w * 2;
-            CursesCurveView ccvn (cn2,
-                                  60,
-                                  ccv_w*2,
+            cn2 = cs.get(cn.id);
+            //CursesCurveView ccvn (cn2,
+            //                      60,
+            //                      ccv_w*2,
+            //                      (LINES - mh)/2,
+            //                      (COLS - mw)/2);
+
+            constexpr int div = 5;
+            CursesCurveView ccvn (cn3,
+                                  60/div,
+                                  ccv_w*2/div,
                                   (LINES - mh)/2,
                                   (COLS - mw)/2);
 
             cur.getkey();
 
-            //using namespace std::chrono_literals;
-            //if (timer > 1s) {
-            //    cur.swap_pair();
+            using namespace std::chrono_literals;
+            if (timer_anim > 1s) {
+             //   cur.swap_pair();
             //    cur.say_hello();
 
-            //    timer = clock::duration::zero();
-            //}
+                //if (flipped) {
+                //    cn.transeg(-7.5, -1.0, 1.0)
+                //      .save();
+                //    flipped = false;
+                //} else {
+                //    cn.sine()
+                //      .save();
+                //    flipped = true;
+                //}
 
-            //timer += clock::now() - start;
+                cn.sine(++sawl).save();
+                cn2 = cs.get(cn.id);
+                timer_anim = clock::duration::zero();
+            }
+
+            if (timer_flash > 200ms) {
+                if (++cur.flash_pair > 87) {
+                    cur.flash_pair = 80;
+                }
+                timer_flash = clock::duration::zero();
+            }
+
+            timer_anim += clock::now() - start;
+            timer_flash += clock::now() - start;
         }
     } catch (runtime_error e) {
         cur.~Curses();

@@ -15,9 +15,26 @@ Curses::Curses()
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
     init_pair(3, COLOR_CYAN, COLOR_BLACK);
 
+    init_color(50, 1000, 1000, 100);
+    init_color(51, 1000, 1000, 380);
+    init_color(52, 1000, 1000, 460);
+    init_color(53, 1000, 1000, 550);
+    init_color(54, 1000, 1000, 630);
+    init_color(55, 1000, 1000, 750);
+    init_color(56, 1000, 1000, 800);
+    init_color(57, 1000, 1000, 900);
+    init_pair(80, 50, COLOR_BLACK);
+    init_pair(81, 51, COLOR_BLACK);
+    init_pair(82, 52, COLOR_BLACK);
+    init_pair(83, 53, COLOR_BLACK);
+    init_pair(84, 54, COLOR_BLACK);
+    init_pair(85, 55, COLOR_BLACK);
+    init_pair(86, 56, COLOR_BLACK);
+    init_pair(87, 57, COLOR_BLACK);
+
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
-    halfdelay(7);
+    halfdelay(1);
     noecho();
     curs_set(0);
 
@@ -55,7 +72,9 @@ void Curses::say_hello(const Audio& aud)
             wmove(win, j, ledge);
             if (cnt % 4 == 0) {
                 if (cnt == 0) {
-                    wattron(win, COLOR_PAIR(2));
+                    //wattron(win, COLOR_PAIR(2));
+                    //wattron(win, COLOR_PAIR(80));
+                    wattron(win, COLOR_PAIR(flash_pair));
                 } else {
                     wattron(win, COLOR_PAIR(3));
                 }
