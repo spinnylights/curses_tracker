@@ -72,11 +72,13 @@ public:
      */
     static constexpr int         sz_bytes = tab_len * sizeof(entry_t);
 
-    Curve(std::shared_ptr<CurveDB> ndb, std::string nname = "");
+    Curve(std::shared_ptr<CurveDB> ndb);
 
-    Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname = "");
+    Curve(std::shared_ptr<CurveDB> ndb, std::string nname);
 
-    Curve() = default;
+    Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid);
+
+    Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname);
 
     /* by default, the transeg curve goes from 0.0 to 1.0
      * a speed of 0.0 is linear

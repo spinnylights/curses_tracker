@@ -3,9 +3,18 @@
 
 #include <cmath>
 
+Curve::Curve(std::shared_ptr<CurveDB> ndb)
+    : db {ndb}
+{}
+
 Curve::Curve(std::shared_ptr<CurveDB> ndb, std::string nname)
     : db {ndb},
       name {nname}
+{}
+
+Curve::Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid)
+    : db {ndb},
+      id {nid}
 {}
 
 Curve::Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname)
