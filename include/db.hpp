@@ -189,7 +189,7 @@ public:
 
     id_t last_id() { return sqlite3_last_insert_rowid(db_p); }
 
-private:
+protected:
     sqlite3* db_p = nullptr;
 
 private:
