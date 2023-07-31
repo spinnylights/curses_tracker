@@ -12,7 +12,7 @@ public:
 
     CurveDB(std::filesystem::path dbfile);
 
-    void emplace(Curve& c, int ndx);
+    DB::id_t emplace(Curve& c, int ndx);
 
     Curve get(id_t id);
 };

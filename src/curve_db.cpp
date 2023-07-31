@@ -30,12 +30,20 @@ CurveDB::CurveDB(std::filesystem::path dbfile)
     }
 }
 
-void CurveDB::emplace(Curve& c, int ndx)
+// idk about this DB::no_id thing, maybe would be better to just have an
+// overload that doesn't take ndx
+DB::id_t CurveDB::emplace(Curve& c, int ndx)
 {
     auto curve_sz = std::remove_reference<decltype(c)>::type::sz_bytes;
 
-    std::string src = "INSERT INTO " + table_name
-                      + " (" + name_col + "," + vals_col + ") VALUES (?,?";
+    std::string src = "INSERT INTO " + table_name + " (";
+
+    if (ndx != DB::no_id) {
+        src += id_col + ",";
+    }
+
+    src += name_col + "," + vals_col + ") VALUES (?,?";
+
     if (ndx != DB::no_id) {
         src += ",?";
     }
@@ -50,6 +58,8 @@ void CurveDB::emplace(Curve& c, int ndx)
     stmt.bind(c.name)
         .bind(c.data(), curve_sz)
         .step();
+
+    return last_id();
 }
 
 Curve CurveDB::get(id_t id)
