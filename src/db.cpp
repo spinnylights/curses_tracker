@@ -132,7 +132,7 @@ DB::Statement DB::prep_stmt(stmt_src src)
     // 3. Run the SQL by calling sqlite3_step() one or more times.
     // 4. Reset the prepared statement using sqlite3_reset() then go back to
     //    step 2. Do this zero or more times.
-    // 5. Destroy the object using sqlite3_finalize(). 
+    // 5. Destroy the object using sqlite3_finalize().
 
     stmt* stmtp;
     const char* z_tail;

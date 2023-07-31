@@ -102,7 +102,7 @@ public:
 
     /* advance the "read head" dt amount
      *
-     * if repeat is not null, 
+     * if repeat is not null,
      */
     void incr(double dt);
     double samp() const;
