@@ -117,6 +117,8 @@ int main(int argc, char* argv[])
 
         Curve::Soid soid {4, 0.0625, 0.5, 0.5};
 
+        Curve::Soidser soidser {};
+
         auto cn3 = cs.newc();
         //             .transeg(0, -1, 1)
         //             .save();
@@ -132,6 +134,8 @@ int main(int argc, char* argv[])
         a = &soid;
         a->process(cn3, 0.75, 0.25);
         //soid.process(cn3, 0.75, 0.25);
+        a = &soidser;
+        a->process(cn3, 1.0, 0.0);
         cn3.save();
 
         cur.say_hello(aud);

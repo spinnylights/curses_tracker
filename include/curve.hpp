@@ -74,9 +74,9 @@ public:
 
     class CurveAlg {
     public:
-        virtual void inner_process(Curve&,
-                                   std::size_t startpos,
-                                   std::size_t endpos) = 0;
+        virtual entry_t inner_process(Curve&, seek_t pos) = 0;
+
+        virtual ~CurveAlg() = default;
 
         void process(Curve&, double endpos = 1.0, double startpos = 0.0);
     };
@@ -85,9 +85,7 @@ public:
     public:
         Segs(double speed = 0.0, double startval = 0.0, double endval = 1.0);
 
-        virtual void inner_process(Curve&,
-                                   std::size_t endpos,
-                                   std::size_t startpos) override;
+        entry_t inner_process(Curve&, seek_t pos) override;
 
     private:
         double speed;
@@ -102,15 +100,32 @@ public:
              double strength = 1.0,
              double offset   = 0.0);
 
-        virtual void inner_process(Curve&,
-                                   std::size_t endpos,
-                                   std::size_t startpos) override;
+        entry_t inner_process(Curve&, seek_t pos) override;
 
     private:
         double harmon;
         double phase;
         double strength;
         double offset;
+    };
+
+    class Soidser : public CurveAlg {
+    public:
+        static constexpr double nsqrd_coefs  = -1.0;
+        static constexpr double same_as_part = -2.0;
+
+        Soidser(double part_spacing  = 1.0,
+                double coef_spacing  = same_as_part,
+                double phase_spacing = 0.0,
+                double fund          = 1.0);
+
+        entry_t inner_process(Curve&, seek_t pos) override;
+
+    private:
+        double part_spacing;
+        double coef_spacing;
+        double phase_spacing;
+        double fund;
     };
 
     Curve(std::shared_ptr<CurveDB> ndb);

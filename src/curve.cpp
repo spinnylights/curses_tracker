@@ -17,33 +17,32 @@ std::size_t scale_fpos(double fpos)
     return static_cast<std::size_t>(std::round(fpos * (Curve::tab_lenf)));
 }
 
-void Curve::CurveAlg::process(Curve& c, double endpos, double startpos)
+void Curve::CurveAlg::process(Curve& c, double fendpos, double fstartpos)
 {
+    std::size_t endpos   = scale_fpos(fendpos);
+    std::size_t startpos = scale_fpos(fstartpos);
+
     if (endpos < startpos) {
         auto endmemo = endpos;
         endpos = startpos;
         startpos = endmemo;
     }
 
-    this->inner_process(c, scale_fpos(endpos), scale_fpos(startpos));
+    auto dist = static_cast<double>(endpos - startpos);
+
+    for (std::size_t i = startpos; i < endpos; ++i) {
+        c.table[i] = this->inner_process(c, (i - startpos)/dist);
+    }
 }
 
-void Curve::Segs::inner_process(Curve& c,
-                                std::size_t endpos,
-                                std::size_t startpos)
+Curve::entry_t Curve::Segs::inner_process(Curve& c, Curve::seek_t pos)
 {
     if (speed == 0.0) {
-        double dist = endpos - startpos;
-        for (std::size_t i = startpos; i < endpos; ++i) {
-            c.table[i] = startval + ((i - startpos)/dist)*(endval - startval);
-        }
+            return startval + pos*(endval - startval);
     } else {
-        for (std::size_t i = startpos; i < endpos; ++i) {
-            double numer = (endval - startval)
-                           * (1.0 - std::exp(i*speed / (tab_len - 1)));
-            double denom = 1.0 - std::exp(speed);
-            c.table[i] = startval + numer / denom;
-        }
+        double numer = (endval - startval) * (1.0 - std::exp(pos));
+        double denom = 1.0 - std::exp(speed);
+        return startval + numer / denom;
     }
 }
 
@@ -57,17 +56,52 @@ Curve::Soid::Soid(double nharmon,
       offset   {noffset}
 {}
 
-void Curve::Soid::inner_process(Curve& c,
-                                std::size_t endpos,
-                                std::size_t startpos)
+Curve::entry_t Curve::Soid::inner_process(Curve& c, Curve::seek_t pos)
 {
-    double dist = endpos - startpos;
-    for (std::size_t i = startpos; i < endpos; ++i) {
-        c.table[i] =
-            std::sin(2*M_PI*harmon*((i - startpos)/dist + phase))
-                * strength
-            + offset;
+    return strength * std::sin(2*M_PI * harmon * (pos + phase)) + offset;
+}
+
+Curve::Soidser::Soidser(double npart_spacing,
+                        double ncoef_spacing,
+                        double nphase_spacing,
+                        double nfund)
+    : part_spacing  {npart_spacing},
+      coef_spacing  {ncoef_spacing},
+      phase_spacing {nphase_spacing},
+      fund          {nfund}
+{
+    if (coef_spacing == same_as_part) {
+        coef_spacing = part_spacing;
     }
+}
+
+// TODO: get the actual sample rate
+static constexpr double sample_rate = 1000;
+
+Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos)
+{
+    double out = 0.0;
+
+    double part         = 1.0;
+    double freq         = fund;
+    double inv_amp_coef = 1.0;
+    double phase        = 0.0;
+    while (freq < sample_rate/2.0) {
+        out += std::sin(2*M_PI * freq * (1.0 + phase + pos)) / inv_amp_coef;
+
+        part += part_spacing;
+        freq = fund * part;
+
+        if (coef_spacing == nsqrd_coefs) {
+            inv_amp_coef = std::pow(part, 2.0);
+        } else {
+            inv_amp_coef += coef_spacing;
+        }
+
+        phase += phase_spacing;
+    }
+
+    return out;
 }
 
 Curve::Curve(std::shared_ptr<CurveDB> ndb)
