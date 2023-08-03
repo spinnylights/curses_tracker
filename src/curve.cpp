@@ -76,7 +76,7 @@ Curve::Soidser::Soidser(double npart_spacing,
 }
 
 // TODO: get the actual sample rate
-static constexpr double sample_rate = 1000;
+static constexpr double sample_rate = 48000;
 
 Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos)
 {
