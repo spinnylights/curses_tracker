@@ -190,8 +190,9 @@ Curve& Curve::save()
 
 Curve::entry_t Curve::get(seek_t read_head) const
 {
-    if (read_head > 1.0) { read_head = 1.0; }
-    if (read_head < 0.0) { read_head = 0.0; }
+    if (read_head > 1.0 || read_head < 0.0) {
+        read_head = std::fmod(read_head, 1.0);
+    }
 
     seek_t tab_dist = read_head * (tab_lenf - 1.0); 
     auto left_ndx = static_cast<decltype(tab_lenf)>(std::floor(tab_dist));
