@@ -74,18 +74,18 @@ public:
 
     class CurveAlg {
     public:
-        virtual entry_t inner_process(Curve&, seek_t pos) = 0;
+        const virtual entry_t inner_process(Curve&, seek_t pos) = 0;
 
         virtual ~CurveAlg() = default;
 
-        void process(Curve&, double endpos = 1.0, double startpos = 0.0);
+        const void process(Curve&, double endpos = 1.0, double startpos = 0.0);
     };
 
     class Segs : public CurveAlg {
     public:
         Segs(double speed = 0.0, double startval = 0.0, double endval = 1.0);
 
-        entry_t inner_process(Curve&, seek_t pos) override;
+        const entry_t inner_process(Curve&, seek_t pos) override;
 
     private:
         double speed;
@@ -100,7 +100,7 @@ public:
              double strength = 1.0,
              double offset   = 0.0);
 
-        entry_t inner_process(Curve&, seek_t pos) override;
+        const entry_t inner_process(Curve&, seek_t pos) override;
 
     private:
         double harmon;
@@ -119,7 +119,7 @@ public:
                 double phase_spacing = 0.0,
                 double fund          = 1.0);
 
-        entry_t inner_process(Curve&, seek_t pos) override;
+        const entry_t inner_process(Curve&, seek_t pos) override;
 
     private:
         double part_spacing;

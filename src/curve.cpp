@@ -17,7 +17,7 @@ std::size_t scale_fpos(double fpos)
     return static_cast<std::size_t>(std::round(fpos * (Curve::tab_lenf)));
 }
 
-void Curve::CurveAlg::process(Curve& c, double fendpos, double fstartpos)
+const void Curve::CurveAlg::process(Curve& c, double fendpos, double fstartpos)
 {
     std::size_t endpos   = scale_fpos(fendpos);
     std::size_t startpos = scale_fpos(fstartpos);
@@ -35,7 +35,7 @@ void Curve::CurveAlg::process(Curve& c, double fendpos, double fstartpos)
     }
 }
 
-Curve::entry_t Curve::Segs::inner_process(Curve& c, Curve::seek_t pos)
+const Curve::entry_t Curve::Segs::inner_process(Curve& c, Curve::seek_t pos)
 {
     if (speed == 0.0) {
             return startval + pos*(endval - startval);
@@ -56,7 +56,7 @@ Curve::Soid::Soid(double nharmon,
       offset   {noffset}
 {}
 
-Curve::entry_t Curve::Soid::inner_process(Curve& c, Curve::seek_t pos)
+const Curve::entry_t Curve::Soid::inner_process(Curve& c, Curve::seek_t pos)
 {
     return strength * std::sin(2*M_PI * harmon * (pos + phase)) + offset;
 }
