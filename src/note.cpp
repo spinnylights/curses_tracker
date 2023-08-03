@@ -4,20 +4,36 @@
 #include <climits>
 #include <string>
 #include <sstream>
+#include <cstdio>
 
 Note::Note(octave_t octave, pc_t pitchc, frac_t frac)
     : oct {octave}, pc {pitchc}, fr {frac}, hz {edo_pitch(octave, pitchc, frac)}
 {}
 
-const std::array<Note::freq_t, Note::steps_cnt> Note::edo_pitches = []{
+const std::array<Note::freq_t, Note::steps_cnt> Note::edo_pitches = []
+{
     std::array<freq_t, steps_cnt> ep {};
+
+#ifdef NDEBUG
+    std::printf("All Note freqs:\n");
+#endif
+
     for (size_t i = 0; i < steps_cnt; ++i) {
         octave_t o = i / edo;
         pc_t     p = i % edo;
 
         ep[i] = base_pitch * std::pow(2.0, o + static_cast<double>(p)
                                                / static_cast<double>(edo));
+
+#ifdef NDEBUG
+        std::printf("%0.14f\n", ep[i]);
+#endif
     }
+
+#ifdef NDEBUG
+    std::printf("\n");
+#endif
+
     return ep;
 }();
 
