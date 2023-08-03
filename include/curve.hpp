@@ -48,6 +48,7 @@
  */
 
 #include "curve_db.hpp"
+#include "note.hpp"
 
 #include <cstdint>
 #include <array>
@@ -117,7 +118,7 @@ public:
         Soidser(double part_spacing  = 1.0,
                 double coef_spacing  = same_as_part,
                 double phase_spacing = 0.0,
-                double fund          = 1.0);
+                double fund          = Note(4, 00, 0).freq());
 
         const entry_t inner_process(Curve&, seek_t pos) override;
 

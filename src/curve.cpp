@@ -78,19 +78,17 @@ Curve::Soidser::Soidser(double npart_spacing,
 // TODO: get the actual sample rate
 static constexpr double sample_rate = 48000;
 
-Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos)
+const Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos)
 {
     double out = 0.0;
 
     double part         = 1.0;
-    double freq         = fund;
     double inv_amp_coef = 1.0;
     double phase        = 0.0;
-    while (freq < sample_rate/2.0) {
-        out += std::sin(2*M_PI * freq * (1.0 + phase + pos)) / inv_amp_coef;
+    while (part*fund < sample_rate/2.0) {
+        out += std::sin(2*M_PI * part * (1.0 + phase + pos)) / inv_amp_coef;
 
         part += part_spacing;
-        freq = fund * part;
 
         if (coef_spacing == nsqrd_coefs) {
             inv_amp_coef = std::pow(part, 2.0);
