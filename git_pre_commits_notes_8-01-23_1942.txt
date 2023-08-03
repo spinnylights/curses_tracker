@@ -1,0 +1,174 @@
+
+[note range redesign]
+[Curve::get() loops around]
+    [get SDL audio actually playing sound]
+        [soidser experiments]
+
+[change soidser default fundamental]
+
+[const CurveAlgs fns]
+
+[sample rate futzing]
+
+[debug print note freqs]
+
+***
+
+audio_sdl.h/cpp:
+    [audio callback fn]
+    [audio callback data]
+    [close audio device]
+    [sdl audio device setup]
+    [g_pos]:
+        [get SDL audio actually playing sound]
+
+curve.h/cpp:
+    [change soidser default fundamental]
+    [const CurveAlgs fns]
+    [sample rate futzing]
+    [Curve::get() loops around]
+
+note.h/cpp:
+    [note range redesign]
+    [debug print note freqs]
+
+main.cpp:
+    [soidser experiments]
+
+***
+===
+
+audio_sdl.hpp
+
+---
+
+[audio callback fn]
+
+refine the callback to support any SDL audio context
+
+---
+
+[audio callback data]
+
+add callback data struct to Audio
+
+---
+
+[close audio device]
+
+store sdl audio device id in Audio
+
+===
+
+audio_sdl.cpp
+
+---
+
+[g_pos]
+
+initialize g_pos for audio data struct (sort of a hack i could
+maybe do away with now that everything is working)
+
+---
+
+[sdl audio device setup]
+
+remove memsets
+
+---
+
+[audio callback fn]
+
+refine the callback to support any SDL audio context
+
+---
+
+[audio callback fn]
+
+actually have the callback get called
+
+---
+
+[audio callback fn]
+
+actually have the callback do something
+
+***
+===
+
+curve.hpp
+
+---
+
+[soidser default fundmental]
+
+change the default fundamental of Soidser
+
+---
+
+[const CurveAlgs fns]
+
+make process() and inner_process() of the CurveAlgs const
+because they are
+
+===
+
+curve.cpp
+
+---
+
+[const CurveAlgs fns]
+
+make process() and inner_process() of the CurveAlgs const
+because they are
+
+---
+
+[sample rate futzing]
+
+i should actually have the sample rate be retrieved from SDL
+
+---
+
+[Curve::get() loops around]
+
+have Curve::get() loop around (ultimately this might be better to
+do with an unsigned integer index?)
+
+***
+===
+
+note.hpp
+
+---
+
+[note range redesign]
+
+change the bottom note to 20 Hz and the top note to ~20,000 Hz
+
+===
+
+note.cpp
+
+---
+
+[debug print note freqs]
+
+some sort of debug print thing
+
+---
+
+[note range redesign]
+
+have notes start at Note(1, 0, 0) instead of Note(0, 0, 0)
+
+***
+===
+
+main.cpp
+
+---
+
+[soidser experiments]
+
+try out the new Soidser class
