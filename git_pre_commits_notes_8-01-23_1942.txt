@@ -1,16 +1,16 @@
+x[note range redesign]
+    x[change soidser default fundamental]
 
-[note range redesign]
-[Curve::get() loops around]
-    [get SDL audio actually playing sound]
-        [soidser experiments]
+x[note range redesign]
+x[Curve::get() loops around]
+    x[get SDL audio actually playing sound]
+        x[soidser experiments]
 
-[change soidser default fundamental]
+x[const CurveAlgs fns]
 
-[const CurveAlgs fns]
+x[sample rate futzing]
 
-[sample rate futzing]
-
-[debug print note freqs]
+x[debug print note freqs]
 
 ***
 
