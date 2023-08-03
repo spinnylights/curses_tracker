@@ -21,6 +21,12 @@ public:
 
     Audio(struct data d);
 
+    Audio(const Audio&) = delete;
+    Audio& operator=(const Audio&) = delete;
+
+    Audio(Audio&&) = delete;
+    Audio& operator=(Audio&&) = delete;
+
     ~Audio() noexcept;
 
     int sr() const { return sampr; }
