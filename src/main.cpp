@@ -54,8 +54,19 @@ int main(int argc, char* argv[])
 
     set_handlers();
 
-    Audio aud;
+    //Curve::Soidser soidser {2, Curve::Soidser::nsqrd_coefs, 0.25, 323.94894327688235};
+    //Curve::Soidser soidser {1.01, 1.5, 0.83, 323.94894327688235};
+    //Curve::Soidser soidser {1.01, 1.5, 0.83, 331.06773395883755};
+    Curve::Soidser soidser {0.84893, 0.7777777, 0.989898989898, Note(5, 14, 0).freq()};
+    //Curve::Soidser soidser {2, 2, 0, 323.94894327688235};
+    //Curve::Soidser soidser {1.85, 1.23, 0.2};
+    Curves cs {":memory:"};
+    auto cn3 = std::make_shared<Curve>(cs.newc());
+    soidser.process(*cn3);
 
+    Audio aud {{cn3}};
+
+    //sleep(5);
     Curses cur;
 
     static const std::string prog_name = "curses_tracker";
@@ -82,7 +93,6 @@ int main(int argc, char* argv[])
     try {
         //fs::path curves_db_path = config_dir / "curves.sqlite3";
         //Curves cs {curves_db_path};
-        Curves cs {":memory:"};
         auto ct = cs.newc()
 //                   .transeg();
 //                   .transeg(0.0, -1.0);
@@ -117,26 +127,24 @@ int main(int argc, char* argv[])
 
         Curve::Soid soid {4, 0.0625, 0.5, 0.5};
 
-        Curve::Soidser soidser {};
 
-        auto cn3 = cs.newc();
         //             .transeg(0, -1, 1)
         //             .save();
         //segs.process(cn3);
-        Curve::CurveAlg* a = &csegs[0];
-        //double start = 0.0;
-        //double dist = 0.5;
-        a->process(cn3, 0.25);
-        //start += dist;
-        //dist += dist;
-        a = &csegs[1];
-        a->process(cn3, 1.0, 0.75);
-        a = &soid;
-        a->process(cn3, 0.75, 0.25);
-        //soid.process(cn3, 0.75, 0.25);
-        a = &soidser;
-        a->process(cn3, 1.0, 0.0);
-        cn3.save();
+        //Curve::CurveAlg* a = &csegs[0];
+        ////double start = 0.0;
+        ////double dist = 0.5;
+        //a->process(cn3, 0.25);
+        ////start += dist;
+        ////dist += dist;
+        //a = &csegs[1];
+        //a->process(cn3, 1.0, 0.75);
+        //a = &soid;
+        //a->process(cn3, 0.75, 0.25);
+        ////soid.process(cn3, 0.75, 0.25);
+        //a = &soidser;
+        //a->process(cn3, 1.0, 0.0);
+        //cn3->save();
 
         cur.say_hello(aud);
         while (!needs_shutdown) {
@@ -158,7 +166,7 @@ int main(int argc, char* argv[])
             //                      (COLS - mw)/2);
 
             constexpr int div = 1;
-            CursesCurveView ccvn (cn3,
+            CursesCurveView ccvn (*cn3,
                                   60/div,
                                   ccv_w*2/div,
                                   (LINES - mh)/2,
