@@ -17,7 +17,7 @@ std::size_t scale_fpos(double fpos)
     return static_cast<std::size_t>(std::round(fpos * (Curve::tab_lenf)));
 }
 
-const void Curve::CurveAlg::process(Curve& c, double fendpos, double fstartpos)
+const void Curve::Alg::process(Curve& c, double fendpos, double fstartpos)
 {
     std::size_t endpos   = scale_fpos(fendpos);
     std::size_t startpos = scale_fpos(fstartpos);

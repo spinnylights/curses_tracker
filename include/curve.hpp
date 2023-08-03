@@ -73,16 +73,16 @@ public:
      */
     static constexpr int         sz_bytes = tab_len * sizeof(entry_t);
 
-    class CurveAlg {
+    class Alg {
     public:
         const virtual entry_t inner_process(Curve&, seek_t pos) = 0;
 
-        virtual ~CurveAlg() = default;
+        virtual ~Alg() = default;
 
         const void process(Curve&, double endpos = 1.0, double startpos = 0.0);
     };
 
-    class Segs : public CurveAlg {
+    class Segs : public Alg {
     public:
         Segs(double speed = 0.0, double startval = 0.0, double endval = 1.0);
 
@@ -94,7 +94,7 @@ public:
         double endval;
     };
 
-    class Soid : public CurveAlg {
+    class Soid : public Alg {
     public:
         Soid(double harmon   = 1.0,
              double phase    = 0.0,
@@ -110,7 +110,7 @@ public:
         double offset;
     };
 
-    class Soidser : public CurveAlg {
+    class Soidser : public Alg {
     public:
         static constexpr double nsqrd_coefs  = -1.0;
         static constexpr double same_as_part = -2.0;
