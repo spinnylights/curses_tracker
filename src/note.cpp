@@ -44,7 +44,8 @@ Note::freq_t Note::edo_pitch(octave_t o, pc_t p)
 
 Note::freq_t Note::edo_pitch(octave_t o, pc_t p, frac_t f)
 {
-    size_t ndx = o*edo + p;
+    if (o == 0) { o = 1; }
+    size_t ndx = (o - 1)*edo + p;
     if (ndx >= steps_cnt - 1) {
         return edo_pitches.at(steps_cnt - 1);
     } else {

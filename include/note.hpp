@@ -15,11 +15,13 @@ public:
     typedef double        freq_t;
 
     static constexpr pc_t   edo        = 53;
-    static constexpr freq_t base_pitch = 1.02197503906;
+    //static constexpr freq_t base_pitch = 1.02197503906;
+    //static constexpr freq_t base_pitch = 1.0;
+    static constexpr freq_t base_pitch = 20.0;
 
-    static constexpr octave_t octave_max = 14;
+    static constexpr octave_t octave_max = 10; // 20480 Hz
     static constexpr pc_t     pc_max     = edo - 1;
-    static constexpr size_t   steps_cnt  = octave_max*edo + 17; // ~20913 Hz
+    static constexpr size_t   steps_cnt  = octave_max*edo; // ~20913 Hz
     static constexpr frac_t   frac_max   = UINT_FAST32_MAX;
 
     static const std::array<freq_t, steps_cnt> edo_pitches;
