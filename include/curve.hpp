@@ -147,13 +147,14 @@ public:
         double fund;
     };
 
-    Curve(std::shared_ptr<CurveDB> ndb);
+    struct args {
+        std::shared_ptr<CurveDB> db          = nullptr;
+        DB::id_t                 id          = DB::no_id;
+        double                   sample_rate = 48000;
+        std::string              name        = "";
+    };
 
-    Curve(std::shared_ptr<CurveDB> ndb, std::string nname);
-
-    Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid);
-
-    Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname);
+    Curve(struct args);
 
     Curve& parse(std::string stmt);
 
@@ -174,6 +175,8 @@ public:
     double last_endpos() const { return last_endp; }
     void reset_endpos() { last_endp = 0.0; }
 
+    double sr() { return sample_rate; }
+
 public:
     std::string name = "";
 
@@ -186,6 +189,7 @@ public:
 private:
     std::shared_ptr<CurveDB> db;
     double last_endp = 0.0;
+    double sample_rate;
 };
 
 #endif

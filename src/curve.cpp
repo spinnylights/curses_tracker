@@ -77,9 +77,6 @@ Curve::Soidser::Soidser(Soidser::args args)
     }
 }
 
-// TODO: get the actual sample rate
-static constexpr double sample_rate = 48000;
-
 Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos) const
 {
     double out = 0.0;
@@ -87,7 +84,7 @@ Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos) const
     double part         = 1.0;
     double inv_amp_coef = 1.0;
     double phase        = 0.0;
-    while (part*fund < sample_rate/2.0) {
+    while (part*fund < c.sr()/2.0) {
         out += std::sin(2*M_PI * part * (1.0 + phase + pos)) / inv_amp_coef;
 
         part += part_spacing;
@@ -104,25 +101,16 @@ Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos) const
     return out;
 }
 
-Curve::Curve(std::shared_ptr<CurveDB> ndb)
-    : db {ndb}
-{}
-
-Curve::Curve(std::shared_ptr<CurveDB> ndb, std::string nname)
-    : db {ndb},
-      name {nname}
-{}
-
-Curve::Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid)
-    : db {ndb},
-      id {nid}
-{}
-
-Curve::Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname)
-    : db {ndb},
-      id {nid},
-      name {nname}
-{}
+Curve::Curve(struct args a)
+    : db {a.db},
+      id {a.id},
+      sample_rate {a.sample_rate},
+      name {a.name}
+{
+    if (db == nullptr) {
+        throw std::logic_error("in Curve(), args.db is null");
+    }
+}
 
 enum class lex {
     segs, soid, soidser, nsqrd, num, no_match

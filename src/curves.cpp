@@ -6,17 +6,24 @@ Curves::Curves(std::filesystem::path db_path)
 
 Curve Curves::newc(std::string name)
 {
-    return {curves, name};
+    Curve::args a {};
+    a.db = curves;
+    a.name = name;
+    return {a};
 }
 
 Curve Curves::newc()
 {
-    return {curves};
+    Curve::args a {};
+    a.db = curves;
+    return {a};
 }
 
 Curve Curves::get(DB::id_t id)
 {
-    Curve c {curves};
+    Curve::args a {};
+    a.db = curves;
+    Curve c {a};
     curves->get(c, id);
     return c;
 }
