@@ -72,27 +72,17 @@ private:
         auto data = reinterpret_cast<struct Audio::data*>(userdata);
         auto chans = reinterpret_cast<T*>(stream);
 
-        //static const double freq1 = Note(7, 00, 0).freq();
-        //static const double freq1 = 215.9744711355553;
         static const double freq1 = Note(4, 13, 0).freq();
-        //static const double freq1 = 220.72051857472195;
-        //static const double freq2 = Note(7, 14, 0).freq();
-        //static const double freq2 = 256;
         static const double freq2 = Note(4, 0, 0).freq();
-        //static const double freq2 = 261.62560999936;
-        //static const double freq3 = Note(7, 31, 0).freq();
-        //static const double freq3 = 323.94894327688235;
         static const double freq3 = Note(4, 44, 0).freq();
         static const double freq4 = Note(5, 9, 0).freq();
-        //static const double freq3 = 331.06773395883755;
 
         for (int i = 0; i < data->samp_cnt*data->chan_cnt; i += data->chan_cnt) {
             auto samp = conv_samp<T>(data->curve->get(freq1*g_pos) * 0.2);
             samp += conv_samp<T>(data->curve->get(freq2*g_pos) * 0.2);
             samp += conv_samp<T>(data->curve->get(freq3*g_pos) * 0.2);
             samp += conv_samp<T>(data->curve->get(freq4*g_pos) * 0.2);
-            //float samp = data->curve->get(data->pos) * 0.9;
-            //float samp = std::sin(2*M_PI*freq*g_pos);
+
             for (int j = i; j < i + data->chan_cnt; ++j) {
                 if (j <= i + 1) {
                     chans[j] = samp;
@@ -100,14 +90,8 @@ private:
                     chans[j] = 0.0;
                 }
             }
-            //chans[i] = samp;
-            //chans[i+1] = samp;
-            //chans[0] = samp;
-            //chans[1] = samp;
-            //data->pos += data->tick_len;
-            //data->pos = std::fmod(data->pos, 1.0);
+
             g_pos += data->tick_len;
-            //g_pos = std::fmod(g_pos, 1.0);
         }
     }
 

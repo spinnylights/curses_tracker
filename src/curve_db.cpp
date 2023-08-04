@@ -95,17 +95,6 @@ void CurveDB::update(Curve& c)
 void CurveDB::get(Curve& c, id_t id)
 {
     auto curve_sz = std::remove_reference<decltype(c)>::type::sz_bytes;
-    //const double* vals_p;
-
-    //auto select_c =
-    //    prep_stmt("SELECT " + id_col + "," + name_col + "," + vals_col +
-    //              " from " + table_name + ";")
-    //        .step()
-    //        .col(0, c.id)
-    //        .col(1, c.name)
-    //        .col(2, vals_p);
-
-    //std::memcpy(c.table.data(), vals_p, select_c.col_sz(2));
 
     auto select_c =
         prep_stmt("SELECT " + name_col
@@ -132,6 +121,4 @@ void CurveDB::get(Curve& c, id_t id)
                                                  0));
 
     check_err<close_blob_error>(sqlite3_blob_close(blob_p));
-
-//    return c;
 }

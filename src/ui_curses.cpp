@@ -72,8 +72,6 @@ void Curses::say_hello(const Audio& aud)
             wmove(win, j, ledge);
             if (cnt % 4 == 0) {
                 if (cnt == 0) {
-                    //wattron(win, COLOR_PAIR(2));
-                    //wattron(win, COLOR_PAIR(80));
                     wattron(win, COLOR_PAIR(flash_pair));
                 } else {
                     wattron(win, COLOR_PAIR(3));
@@ -106,7 +104,6 @@ void Curses::say_hello(const Audio& aud)
 
     wmove(win, 0, 0);
     Note note {8, 40, 0.5};
-    //std::string frac_s = std::to_string(note.frac());
     std::string frac_s = note.pch();
     wprintw(win, "%dx%d/%c/%d/%0.5f/%s",
             w(), h(), key, aud.sr(), note.freq(), frac_s.c_str());

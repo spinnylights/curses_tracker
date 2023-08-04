@@ -11,7 +11,6 @@
 #include <memory>
 #include <functional>
 
-// maybe this should be a template over classes for individual tables?
 class DB {
 public:
     typedef sqlite3_stmt stmt;

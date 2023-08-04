@@ -45,27 +45,4 @@ class TrigSynth : public SynthMethod {
     virtual void trig(uint64_t) = 0;
 };
 
-/*
- * SimpleSine s;
- * double smp = 0.0;
- * double dt  = 0.0
- *
- * s.pitch(440.0);
- * s.update();
- * smp = s.samp();
- * s.update(dt += time_interval);
- * smp = s.samp();
- * s.update(dt += time_interval);
- * smp = s.samp();
- * ...
- */
-class SimpleSine : public PitchSynth {
-public:
-    void update()
-    {
-        static constexpr double tau = 2*M_PI;
-        samp(std::sin(tau*freq()*delta()));
-    }
-};
-
 #endif

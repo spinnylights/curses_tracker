@@ -63,24 +63,3 @@ std::string Note::pch() const
     s << oct << "." << pc << std::string_view(fs.data() + 2, fs.size() - 2);
     return s.str();
 }
-
-//NoteView::NoteView(std::string octave, std::string pcfrac)
-//{
-//     auto oct =
-//         static_cast<Note::octave_t>(std::stoul(octave) & Note::octave_max);
-//
-//     auto pc = static_cast<Note::pc_t>(std::stoul(pcfrac.substr(0, pc_digits)));
-//
-//     auto frac_raw = std::stoul(pcfrac.substr(pc_digits,
-//                                              pcfrac.length() - pc_digits));
-//     auto frac = static_cast<Note::frac_t>(frac_raw & Note::frac_max);
-//
-//     nt = {oct, pc, frac};
-//}
-//
-//std::string NoteView::str() const
-//{
-//    std::stringstream s;
-//    s << nt.octave() << "." << nt.pitchc() << nt.frac();
-//    return s.str();
-//}
