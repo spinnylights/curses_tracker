@@ -57,12 +57,22 @@ int main(int argc, char* argv[])
     //Curve::Soidser soidser {2, Curve::Soidser::nsqrd_coefs, 0.25, 323.94894327688235};
     //Curve::Soidser soidser {1.01, 1.5, 0.83, 323.94894327688235};
     //Curve::Soidser soidser {1.01, 1.5, 0.83, 331.06773395883755};
-    Curve::Soidser soidser {0.84893, 0.7777777, 0.989898989898, Note(5, 14, 0).freq()};
+    //Curve::Soidser soidser {0.84893, 0.7777777, 0.989898989898, Note(5, 14, 0).freq()};
     //Curve::Soidser soidser {2, 2, 0, 323.94894327688235};
     //Curve::Soidser soidser {1.85, 1.23, 0.2};
     Curves cs {":memory:"};
     auto cn3 = std::make_shared<Curve>(cs.newc());
-    soidser.process(*cn3);
+    //soidser.process(*cn3);
+    //cn3->parse("0.1 0.9 segs -2 1 -1");
+    cn3->parse("0.25 segs 5 0 1");
+    cn3->parse("0.75 segs 5 1 -1");
+    cn3->parse("1 segs 5 -1 0");
+    cn3->reset_endpos();
+    cn3->parse(".5  segs -5 -1 1");
+    cn3->parse(".75 soid 1 .625 0.25 0.5");
+    cn3->parse("1   segs 5 .75 -1");
+    //cn3->parse(".5 soidser 3 .625");
+    //cn3->parse("1 soidser 2 n 0.25 1000");
 
     Audio aud {{cn3}};
 
@@ -120,12 +130,12 @@ int main(int argc, char* argv[])
         unsigned long sawl = 1;
         cn2.sine(sawl).save();
 
-        std::vector<Curve::Segs> csegs = {
-             {0, -1},
-             {0, 1, -1},
-        };
+        //std::vector<Curve::Segs> csegs = {
+        //     {0, -1},
+        //     {0, 1, -1},
+        //};
 
-        Curve::Soid soid {4, 0.0625, 0.5, 0.5};
+        //Curve::Soid soid {4, 0.0625, 0.5, 0.5};
 
 
         //             .transeg(0, -1, 1)

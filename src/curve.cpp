@@ -2,11 +2,13 @@
 #include "curve_db.hpp"
 
 #include <cmath>
+#include <regex>
+#include <iterator>
 
-Curve::Segs::Segs(double nspeed, double nstartval, double nendval)
-    : speed    {nspeed},
-      startval {nstartval},
-      endval   {nendval}
+Curve::Segs::Segs(Segs::args args)
+    : speed    {args.speed * -1.0},
+      startval {args.startval},
+      endval   {args.endval}
 {}
 
 std::size_t scale_fpos(double fpos)
@@ -17,8 +19,12 @@ std::size_t scale_fpos(double fpos)
     return static_cast<std::size_t>(std::round(fpos * (Curve::tab_lenf)));
 }
 
-const void Curve::Alg::process(Curve& c, double fendpos, double fstartpos)
+void Curve::Alg::process(Curve& c, double fendpos, double fstartpos)
 {
+    if (fstartpos == auto_startpos) {
+        fstartpos = c.last_endpos();
+    }
+
     std::size_t endpos   = scale_fpos(fendpos);
     std::size_t startpos = scale_fpos(fstartpos);
 
@@ -40,20 +46,19 @@ const Curve::entry_t Curve::Segs::inner_process(Curve& c, Curve::seek_t pos)
     if (speed == 0.0) {
             return startval + pos*(endval - startval);
     } else {
-        double numer = (endval - startval) * (1.0 - std::exp(pos));
+        double numer = (endval - startval) * (1.0 - std::exp(pos*speed));
         double denom = 1.0 - std::exp(speed);
-        return startval + numer / denom;
+        auto out = startval + numer / denom;
+
+        return out;
     }
 }
 
-Curve::Soid::Soid(double nharmon,
-                  double nphase,
-                  double nstrength,
-                  double noffset)
-    : harmon   {nharmon},
-      phase    {nphase},
-      strength {nstrength},
-      offset   {noffset}
+Curve::Soid::Soid(Soid::args args)
+    : harmon   {args.harmon},
+      phase    {args.phase},
+      strength {args.strength},
+      offset   {args.offset}
 {}
 
 const Curve::entry_t Curve::Soid::inner_process(Curve& c, Curve::seek_t pos)
@@ -61,14 +66,11 @@ const Curve::entry_t Curve::Soid::inner_process(Curve& c, Curve::seek_t pos)
     return strength * std::sin(2*M_PI * harmon * (pos + phase)) + offset;
 }
 
-Curve::Soidser::Soidser(double npart_spacing,
-                        double ncoef_spacing,
-                        double nphase_spacing,
-                        double nfund)
-    : part_spacing  {npart_spacing},
-      coef_spacing  {ncoef_spacing},
-      phase_spacing {nphase_spacing},
-      fund          {nfund}
+Curve::Soidser::Soidser(Soidser::args args)
+    : part_spacing  {args.part_spacing},
+      coef_spacing  {args.coef_spacing},
+      phase_spacing {args.phase_spacing},
+      fund          {args.fund}
 {
     if (coef_spacing == same_as_part) {
         coef_spacing = part_spacing;
@@ -173,6 +175,182 @@ Curve& Curve::sine(unsigned long sawl)
             v /= max_mag;
         }
     }
+
+    return *this;
+}
+
+enum class lex {
+    segs, soid, soidser, nsqrd, num, no_match
+};
+
+typedef std::tuple<std::string, lex> lex_t;
+typedef std::tuple<std::regex, lex>  lex_reg_t;
+
+struct parse_params {
+    double endpos = 1.0;
+    double startpos = 0.0;
+    unsigned algpos = 0;
+    bool provide_startpos = false;
+};
+
+template<typename T>
+void parse_curveargs(Curve& c,
+                     const std::vector<lex_t>& lexes,
+                     const struct parse_params& prms,
+                     const std::vector<std::function<void(typename T::args&,
+                                                          unsigned,
+                                                          lex,
+                                                          std::string)>>&
+                         argfns)
+{
+    typename T::args args {};
+
+    auto max_args = argfns.size();
+
+    for (unsigned offs = 0; offs < max_args; ++offs) {
+        auto argpos = prms.algpos + offs + 1;
+        if (lexes.size() > argpos) {
+            lex         lme = std::get<1>(lexes.at(argpos));
+            std::string tok = std::get<0>(lexes.at(argpos));
+
+            argfns[offs](args, argpos, lme, tok);
+        }
+    }
+
+    T alg {args};
+    if (prms.provide_startpos) {
+        alg.process(c, prms.endpos, prms.startpos);
+    } else {
+        alg.process(c, prms.endpos);
+    }
+}
+
+Curve& Curve::parse(std::string stmt)
+{
+    static const std::vector<lex_t> lexeme_strs = {
+        {R"(segs)", lex::segs},
+        {R"(soid)", lex::soid},
+        {R"(soidser)", lex::soidser},
+        {R"(n)", lex::nsqrd},
+        {R"(-{0,1}[\d]*\.{0,1}[\d]*)", lex::num},
+    };
+
+    static const std::vector<lex_reg_t> lexemes = []
+    {
+        std::vector<lex_reg_t> rs(lexeme_strs.size());
+        for (auto&& s : lexeme_strs) {
+            std::regex r {std::get<0>(s)};
+            lex_reg_t t = {r, std::get<1>(s)};
+            rs.push_back(t);
+        }
+        return rs;
+    }();
+
+    std::istringstream strm {stmt};
+    typedef std::istream_iterator<std::string> iter_t;
+
+    std::vector<lex_t> lexes;
+
+    for (iter_t iter {strm}; iter != iter_t(); ++iter) {
+        lex res = lex::no_match;
+        for (auto&& l : lexemes) {
+            if (std::regex_match(*iter, std::get<0>(l))) {
+                res = std::get<1>(l);
+                break;
+            }
+        }
+
+        if (res == lex::no_match) {
+            throw std::runtime_error("did not understand '" + *iter + "'");
+        } else {
+            lex_t l {*iter, res};
+            lexes.push_back(l);
+        }
+    }
+
+    struct parse_params prms {};
+
+    if (lexes.size() > 1 && std::get<1>(lexes.at(0)) == lex::num) {
+        prms.endpos = std::stod(std::get<0>(lexes.at(0)));
+        ++prms.algpos;
+
+        if (lexes.size() > 2 && std::get<1>(lexes.at(1)) == lex::num) {
+            prms.startpos = std::stod(std::get<0>(lexes.at(1)));
+            ++prms.algpos;
+            prms.provide_startpos = true;
+        }
+    }
+
+    lex alg = std::get<1>(lexes.at(prms.algpos));
+
+    if (alg == lex::segs) {
+        parse_curveargs<Segs>(*this, lexes, prms, {
+            [](Segs::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.speed = std::stod(tok);
+            },
+
+            [](Segs::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.startval = std::stod(tok);
+            },
+
+            [](Segs::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.endval = std::stod(tok);
+            },
+        });
+    } else if (alg == lex::soid) {
+        parse_curveargs<Soid>(*this, lexes, prms, {
+            [](Soid::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.harmon = std::stod(tok);
+            },
+
+            [](Soid::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.phase = std::stod(tok);
+            },
+
+            [](Soid::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.strength = std::stod(tok);
+            },
+
+            [](Soid::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.offset = std::stod(tok);
+            },
+        });
+    } else if (alg == lex::soidser) {
+        parse_curveargs<Soidser>(*this, lexes, prms, {
+            [](Soidser::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.part_spacing = std::stod(tok);
+            },
+
+            [](Soidser::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                if (lme == lex::nsqrd) {
+                    args.coef_spacing = Soidser::nsqrd_coefs;
+                } else {
+                    args.coef_spacing = std::stod(tok);
+                }
+            },
+
+            [](Soidser::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.phase_spacing = std::stod(tok);
+            },
+
+            [](Soidser::args& args, unsigned argpos, lex lme, std::string tok)
+            {
+                args.fund = std::stod(tok);
+            },
+        });
+    }
+
+    last_endp = prms.endpos;
 
     return *this;
 }

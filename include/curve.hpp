@@ -75,16 +75,26 @@ public:
 
     class Alg {
     public:
+        static constexpr double auto_startpos = -1.0;
+
         const virtual entry_t inner_process(Curve&, seek_t pos) = 0;
 
         virtual ~Alg() = default;
 
-        const void process(Curve&, double endpos = 1.0, double startpos = 0.0);
+        void process(Curve&,
+                     double endpos = 1.0,
+                     double startpos = auto_startpos);
     };
 
     class Segs : public Alg {
     public:
-        Segs(double speed = 0.0, double startval = 0.0, double endval = 1.0);
+        struct args {
+            double speed    = 0.0;
+            double startval = 0.0;
+            double endval   = 1.0;
+        };
+
+        Segs(struct args);
 
         const entry_t inner_process(Curve&, seek_t pos) override;
 
@@ -96,10 +106,14 @@ public:
 
     class Soid : public Alg {
     public:
-        Soid(double harmon   = 1.0,
-             double phase    = 0.0,
-             double strength = 1.0,
-             double offset   = 0.0);
+        struct args {
+            double harmon   = 1.0;
+            double phase    = 0.0;
+            double strength = 1.0;
+            double offset   = 0.0;
+        };
+
+        Soid(struct args);
 
         const entry_t inner_process(Curve&, seek_t pos) override;
 
@@ -115,10 +129,14 @@ public:
         static constexpr double nsqrd_coefs  = -1.0;
         static constexpr double same_as_part = -2.0;
 
-        Soidser(double part_spacing  = 1.0,
-                double coef_spacing  = same_as_part,
-                double phase_spacing = 0.0,
-                double fund          = Note(4, 00, 0).freq());
+        struct args {
+            double part_spacing  = 1.0;
+            double coef_spacing  = same_as_part;
+            double phase_spacing = 0.0;
+            double fund          = Note(4, 00, 0).freq();
+        };
+
+        Soidser(struct args);
 
         const entry_t inner_process(Curve&, seek_t pos) override;
 
@@ -153,6 +171,8 @@ public:
 
     Curve& sine(unsigned long sawl = 20);
 
+    Curve& parse(std::string stmt);
+
     /* be careful using this pointer
      *
      * it's intended to make things easy working with C APIs, but obviously it
@@ -167,6 +187,9 @@ public:
 
     entry_t get(seek_t read_head) const;
 
+    double last_endpos() const { return last_endp; }
+    void reset_endpos() { last_endp = 0.0; }
+
 public:
     std::string name = "";
 
@@ -178,6 +201,7 @@ public:
 
 private:
     std::shared_ptr<CurveDB> db;
+    double last_endp = 0.0;
 };
 
 #endif
