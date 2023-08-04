@@ -155,22 +155,6 @@ public:
 
     Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname);
 
-    /* by default, the transeg curve goes from 0.0 to 1.0
-     * a speed of 0.0 is linear
-     * >0.0 means it approches the end more quickly(?)
-     * <0.0 means it approches the end more slowly(?)
-     *
-     * transeg()               -- starts at 0.0, goes linearly to 1.0
-     * transeg(3.0)            -- starts at 0.0, goes quickly to 1.0
-     * transeg(3.0, -1.0)      -- starts at -1.0, goes quickly to 1.0
-     * transeg(3.0, -1.0, 0.0) -- starts at -1.0, goes quickly to 0.0
-     */
-    Curve& transeg(double speed    = 0.0,
-                   double startval = 0.0,
-                   double endval   = 1.0);
-
-    Curve& sine(unsigned long sawl = 20);
-
     Curve& parse(std::string stmt);
 
     /* be careful using this pointer

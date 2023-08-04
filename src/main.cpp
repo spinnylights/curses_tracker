@@ -103,24 +103,24 @@ int main(int argc, char* argv[])
     try {
         //fs::path curves_db_path = config_dir / "curves.sqlite3";
         //Curves cs {curves_db_path};
-        auto ct = cs.newc()
+//        auto ct = cs.newc()
 //                   .transeg();
 //                   .transeg(0.0, -1.0);
-                   .transeg(-7.5, -1.0, 1.0);
+//                   .transeg(-7.5, -1.0, 1.0);
 //                   .sine();
 //                   .save();
         //auto curves_db = std::make_shared<CurveDB>(curves_db_path);
         //Curve c {curves_db, "meow"};
         //c.transeg(3.0, -1.0);
         //c.save();
-        auto cn = cs.newc()
-                    .sine()
-                    .save();
+//        auto cn = cs.newc()
+//                    .sine()
+//                    .save();
+//
+//        cn.transeg().save();
 
-        cn.transeg().save();
-
-        auto cn_id = cn.id;
-        auto cn2 = cs.get(cn_id);
+//        auto cn_id = cn.id;
+//        auto cn2 = cs.get(cn_id);
 
         using clock = std::chrono::steady_clock;
         clock::duration timer_anim = clock::duration::zero();
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 
         bool flipped = false;
         unsigned long sawl = 1;
-        cn2.sine(sawl).save();
+//        cn2.sine(sawl).save();
 
         //std::vector<Curve::Segs> csegs = {
         //     {0, -1},
@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
             //CursesCurveView ccvt (ct, 40, ccv_w, 10, 10);
             int mh = 60;
             int mw = ccv_w * 2;
-            cn2 = cs.get(cn.id);
+//            cn2 = cs.get(cn.id);
             //CursesCurveView ccvn (cn2,
             //                      60,
             //                      ccv_w*2,
@@ -199,8 +199,8 @@ int main(int argc, char* argv[])
                 //    flipped = true;
                 //}
 
-                cn.sine(++sawl).save();
-                cn2 = cs.get(cn.id);
+//                cn.sine(++sawl).save();
+//                cn2 = cs.get(cn.id);
                 timer_anim = clock::duration::zero();
             }
 

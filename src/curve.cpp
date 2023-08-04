@@ -124,61 +124,6 @@ Curve::Curve(std::shared_ptr<CurveDB> ndb, DB::id_t nid, std::string nname)
       name {nname}
 {}
 
-Curve& Curve::transeg(double speed,
-                      double startval,
-                      double endval)
-{
-    if (speed == 0.0) {
-        for (std::size_t i = 0; i < tab_len; ++i) {
-            table[i] = startval + (i/tab_lenf)*(endval - startval);
-        }
-    } else {
-        for (std::size_t i = 0; i < tab_len; ++i) {
-            double numer = (endval - startval)
-                           * (1.0 - std::exp(i*speed / (tab_len - 1)));
-            double denom = 1.0 - std::exp(speed);
-            table[i] = startval + numer / denom;
-        }
-    }
-    return *this;
-}
-
-Curve& Curve::sine(unsigned long sawl)
-{
-    for (std::size_t i = 0; i < tab_len; ++i) {
-        auto basic_freq = 2*M_PI*(i/tab_lenf);
-        decltype(basic_freq) saw = 0;
-        //static constexpr short sawl = 20;
-        for (unsigned long j = 1; j <= sawl; ++j) {
-            saw += (std::cos(basic_freq*j)/j);
-        }
-        table[i] = saw;
-    }
-
-//        for (auto& v : table) {
-//            bool neg = std::signbit(v);
-//            v = std::log(std::abs(v)) + 1;
-////            if (std::signbit(v)) {
-//            if (neg) {
-//                v *= -1;
-//            }
-//        }
-
-    auto max_mag =
-        std::abs(*std::max_element(table.begin(), table.end(), [](int a, int b)
-        {
-            return std::abs(a) < std::abs(b);
-        }));
-
-    if (max_mag > 1.0) {
-        for (auto& v : table) {
-            v /= max_mag;
-        }
-    }
-
-    return *this;
-}
-
 enum class lex {
     segs, soid, soidser, nsqrd, num, no_match
 };
