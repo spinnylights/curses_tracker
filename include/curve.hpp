@@ -77,7 +77,7 @@ public:
     public:
         static constexpr double auto_startpos = -1.0;
 
-        const virtual entry_t inner_process(Curve&, seek_t pos) = 0;
+        virtual entry_t inner_process(Curve&, seek_t pos) const = 0;
 
         virtual ~Alg() = default;
 
@@ -96,7 +96,7 @@ public:
 
         Segs(struct args);
 
-        const entry_t inner_process(Curve&, seek_t pos) override;
+        entry_t inner_process(Curve&, seek_t pos) const override;
 
     private:
         double speed;
@@ -115,7 +115,7 @@ public:
 
         Soid(struct args);
 
-        const entry_t inner_process(Curve&, seek_t pos) override;
+        entry_t inner_process(Curve&, seek_t pos) const override;
 
     private:
         double harmon;
@@ -138,7 +138,7 @@ public:
 
         Soidser(struct args);
 
-        const entry_t inner_process(Curve&, seek_t pos) override;
+        entry_t inner_process(Curve&, seek_t pos) const override;
 
     private:
         double part_spacing;

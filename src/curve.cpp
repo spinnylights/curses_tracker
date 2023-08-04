@@ -41,7 +41,7 @@ void Curve::Alg::process(Curve& c, double fendpos, double fstartpos)
     }
 }
 
-const Curve::entry_t Curve::Segs::inner_process(Curve& c, Curve::seek_t pos)
+Curve::entry_t Curve::Segs::inner_process(Curve& c, Curve::seek_t pos) const
 {
     if (speed == 0.0) {
             return startval + pos*(endval - startval);
@@ -61,7 +61,7 @@ Curve::Soid::Soid(Soid::args args)
       offset   {args.offset}
 {}
 
-const Curve::entry_t Curve::Soid::inner_process(Curve& c, Curve::seek_t pos)
+Curve::entry_t Curve::Soid::inner_process(Curve& c, Curve::seek_t pos) const
 {
     return strength * std::sin(2*M_PI * harmon * (pos + phase)) + offset;
 }
@@ -80,7 +80,7 @@ Curve::Soidser::Soidser(Soidser::args args)
 // TODO: get the actual sample rate
 static constexpr double sample_rate = 48000;
 
-const Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos)
+Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos) const
 {
     double out = 0.0;
 
