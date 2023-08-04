@@ -1,7 +1,6 @@
 #ifndef Gc8dac77ce0245418b9092442d2fc608
 #define Gc8dac77ce0245418b9092442d2fc608
 
-#include "event.hpp"
 #include "audio_sdl.hpp"
 
 #include <sys/ioctl.h>
@@ -29,6 +28,7 @@ public:
     void h(unsigned short n) { ws.ws_row = n; }
 
     int flash_pair = 80;
+
 private:
     WINDOW* win = nullptr;
     struct winsize ws {};
