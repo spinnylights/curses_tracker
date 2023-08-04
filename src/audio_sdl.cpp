@@ -24,6 +24,30 @@ auto open_dev(const SDL_AudioSpec& want, SDL_AudioSpec& have)
     return out;
 };
 
+// the problem is, i need to output the sample rate from here to the rest of the
+// world but i only know the sample rate (sampr) after i've opened the SDL audio
+// device
+//
+// the trouble with /that/ is, i start playing audio on the device right after
+// making contact with it, so i need to have everything ready to play audio,
+// including the wavetable curve which now should receive the sample rate as
+// part of its constructor
+//
+// either i need to provide a way to add the curve after audio playback has
+// started, or i need to provide a way to add a curve and then start the audio,
+// or i need to redesign this part of the program more extensively since i'm
+// ultimately going to talk to the Synth here, probably across threads through a
+// deque or w/e
+//
+// i don't want to get too complicated yet here i guess because i'm just trying
+// to sort out the sample rate stuff rn, but i also don't want to create too
+// much extra work for myself to do when i do actually build out the more full
+// interface here
+//
+// for now, probably the easiest thing to do is provide a way to add the curve
+// after construction and a way to start playback after that, i guess, although
+// it may be that i remove those member functions later
+
 Audio::Audio(struct data nd)
     : d {nd}
 {
@@ -98,8 +122,6 @@ Audio::Audio(struct data nd)
 
     d.samp_cnt = have.samples;
     d.chan_cnt = have.channels;
-
-    SDL_PauseAudioDevice(dev, 0);
 }
 
 Audio::~Audio() noexcept

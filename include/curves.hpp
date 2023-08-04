@@ -12,7 +12,7 @@ class Curves {
 public:
     typedef std::shared_ptr<CurveDB> curves_col;
 
-    Curves(std::filesystem::path db_path);
+    Curves(std::filesystem::path db_path, double sample_rate);
 
     Curve newc(std::string name);
     Curve newc();
@@ -21,6 +21,7 @@ public:
 
 private:
     curves_col curves;
+    double sample_rate;
 };
 
 #endif

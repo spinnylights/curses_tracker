@@ -8,6 +8,8 @@ const std::string id_col     = "id";
 const std::string name_col   = "name";
 const std::string vals_col   = "vals";
 
+// remember to store + retrieve sample_rate for each Curve
+
 CurveDB::CurveDB(std::filesystem::path dbfile)
     : DB(dbfile)
 {

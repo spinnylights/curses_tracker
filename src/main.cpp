@@ -54,13 +54,16 @@ int main(int argc, char* argv[])
 
     set_handlers();
 
-    Curves cs {":memory:"};
+    Audio aud {{}};
+
+    Curves cs {":memory:", aud.srf()};
     auto cn = std::make_shared<Curve>(cs.newc());
     cn->parse(".5  segs -5 -1 1");
     cn->parse(".75 soid 1 .625 0.25 0.5");
     cn->parse("1   segs 5 .75 -1");
 
-    Audio aud {{cn}};
+    aud.add_curve(cn);
+    aud.start_playback();
 
     Curses cur;
 

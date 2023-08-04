@@ -29,7 +29,12 @@ public:
 
     ~Audio() noexcept;
 
+    // these functions may not stick around for very long
+    void add_curve(std::shared_ptr<Curve> curve) { d.curve = curve; }
+    void start_playback() { SDL_PauseAudioDevice(dev, 0); }
+
     int sr() const { return sampr; }
+    double srf() const { return static_cast<double>(sampr); }
 
 private:
     static double g_pos;
