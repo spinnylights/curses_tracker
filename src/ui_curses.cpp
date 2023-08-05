@@ -12,8 +12,11 @@ Curses::Curses()
     start_color();
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
     init_color(20, 1000, 350, 150);
+    short grey = 200;
+    init_color(30, grey, grey, grey);
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
     init_pair(3, COLOR_CYAN, COLOR_BLACK);
+    init_pair(4, COLOR_MAGENTA, 30);
 
     init_color(50, 1000, 1000, 100);
     init_color(51, 1000, 1000, 380);
@@ -31,6 +34,13 @@ Curses::Curses()
     init_pair(85, 55, COLOR_BLACK);
     init_pair(86, 56, COLOR_BLACK);
     init_pair(87, 57, COLOR_BLACK);
+
+    init_color(31, 600, 250, 50);
+    init_color(32, 575, 225, 25);
+
+    init_pair(20, COLOR_YELLOW, COLOR_BLUE);
+    init_pair(21, COLOR_CYAN, 31);
+    init_pair(22, COLOR_CYAN, 32);
 
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);

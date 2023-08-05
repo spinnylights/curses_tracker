@@ -63,3 +63,53 @@ std::string Note::pch() const
     s << oct << "." << pc << std::string_view(fs.data() + 2, fs.size() - 2);
     return s.str();
 }
+
+Note Note::operator+(frac_t npcf) const
+{
+    signed_pc_t npc = std::floor(npcf);
+    frac_t      nf;
+    if (npcf >= 0.0) {
+        nf = npcf - std::floor(npcf);
+    } else {
+        nf = npcf - std::ceil(npcf);
+    }
+
+    signed_pc_t spc = (static_cast<signed_pc_t>(pc) + npc) % edo;
+    signed_pc_t soct = static_cast<signed_pc_t>(oct)
+                       + ((static_cast<signed_pc_t>(pc) + npc)
+                          / static_cast<signed_pc_t>(edo));
+    frac_t      snf = std::fmod((fr + nf), 1.0);
+
+    if (soct > octave_max
+        || (soct == octave_max && (spc > 0 || snf > 0.0))) {
+        soct = octave_max;
+        spc  = 0;
+        snf  = 0.0;
+    } else if (soct < 1) {
+        soct = 1;
+        spc  = 0;
+        snf  = 0.0;
+    }
+
+    return {
+        static_cast<octave_t>(soct),
+        static_cast<pc_t>(spc),
+        snf,
+    };
+}
+
+Note Note::operator+(const Note& nn) const
+{
+    return *this + (nn.octave()*edo + nn.pitchc() + nn.frac());
+}
+
+Note Note::operator-(frac_t npcf) const
+{
+    return *this + (-npcf);
+}
+
+Note Note::operator-(const Note& nn) const
+{
+    return *this + (-(nn.octave()*edo + nn.pitchc() + nn.frac()));
+}
+

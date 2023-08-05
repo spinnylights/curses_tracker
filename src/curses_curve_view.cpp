@@ -1,9 +1,12 @@
 #include "curses_curve_view.hpp"
 
-CursesCurveView::CursesCurveView(const Curve& c, int h, int w, int y, int x)
+CursesCurveView::CursesCurveView(const Curve& c,
+                                 int h, int w, int y, int x,
+                                 int color_pair)
     : win {newwin(h,w,y,x)}
 {
     werase(win);
+    wattron(win, COLOR_PAIR(color_pair));
     box(win, 0, 0);
     int inner_w = w - 2;
     if (inner_w < 0) { inner_w = 0; }

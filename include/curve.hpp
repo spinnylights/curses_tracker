@@ -147,6 +147,10 @@ public:
         double fund;
     };
 
+    enum wrapmode {
+        sticky, looping, ping_pong_sticky, ping_pong_looping
+    };
+
     struct args {
         std::shared_ptr<CurveDB> db          = nullptr;
         DB::id_t                 id          = DB::no_id;
@@ -157,6 +161,12 @@ public:
     Curve(struct args);
 
     Curve& parse(std::string stmt);
+
+    Curve(const Curve&) = delete;
+    Curve& operator=(const Curve&) = delete;
+
+    Curve(Curve&&) = default;
+    Curve& operator=(Curve&&) = default;
 
     /* be careful using this pointer
      *
@@ -177,6 +187,9 @@ public:
 
     double sr() { return sample_rate; }
 
+    enum wrapmode wrapm() const { return wm; }
+    void wrapm(enum wrapmode nwm) { wm = nwm; }
+
 public:
     std::string name = "";
 
@@ -190,6 +203,7 @@ private:
     std::shared_ptr<CurveDB> db;
     double last_endp = 0.0;
     double sample_rate;
+    enum wrapmode wm = looping;
 };
 
 #endif

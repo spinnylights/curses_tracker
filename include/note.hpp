@@ -11,6 +11,7 @@ class Note {
 public:
     typedef uint_fast16_t octave_t;
     typedef uint_fast16_t pc_t;
+    typedef int_fast32_t  signed_pc_t;
     typedef double        frac_t;
     typedef double        freq_t;
 
@@ -27,7 +28,7 @@ public:
     static freq_t edo_pitch(octave_t, pc_t, frac_t);
 
     Note() = default;
-    Note(octave_t, pc_t, frac_t);
+    Note(octave_t, pc_t, frac_t f = 0);
 
     octave_t octave() const { return oct; }
     pc_t     pitchc() const { return pc; }
@@ -35,6 +36,11 @@ public:
     freq_t   freq()   const { return hz; }
 
     std::string pch() const;
+
+    Note operator+(frac_t) const;
+    Note operator+(const Note&) const;
+    Note operator-(frac_t) const;
+    Note operator-(const Note&) const;
 
     ~Note() = default;
 

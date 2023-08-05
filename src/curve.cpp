@@ -301,8 +301,50 @@ Curve& Curve::save()
 
 Curve::entry_t Curve::get(seek_t read_head) const
 {
-    if (read_head > 1.0 || read_head < 0.0) {
-        read_head = std::fmod(read_head, 1.0);
+    switch (wm) {
+    case (sticky):
+        if (read_head > 1.0) {
+            read_head = 1.0;
+        } else if (read_head < 0.0) {
+            read_head = 0.0;
+        }
+        break;
+    case (looping):
+        if (read_head > 1.0 || read_head < 0.0) {
+            read_head = std::fmod(read_head, 1.0);
+        }
+        break;
+    case (ping_pong_sticky):
+        if (read_head > 1.0) {
+            if (read_head < 2.0) {
+                read_head = 2.0 - read_head;
+            } else {
+                read_head = 0.0;
+            }
+        } else if (read_head < 0.0) {
+            if (read_head > -1.0) {
+                read_head *= -1.0;
+            } else if (read_head > -2.0) {
+                read_head += 2.0;
+            } else {
+                read_head = 0.0;
+            }
+        }
+        break;
+    case (ping_pong_looping):
+        if (read_head > 1.0) {
+            read_head = std::fmod(read_head, 1.0);
+            if (static_cast<uint64_t>(read_head) % 2 != 0) {
+                read_head = 1.0 - read_head;
+            }
+        } else if (read_head < 0.0) {
+            if (static_cast<uint64_t>(-read_head) % 2 == 0) {
+                read_head *= -1.0;
+            } else {
+                read_head = std::fmod(read_head, 1.0);
+            }
+        }
+        break;
     }
 
     seek_t tab_dist = read_head * (tab_lenf - 1.0); 

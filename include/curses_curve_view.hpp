@@ -12,7 +12,8 @@ public:
         down
     };
 
-    CursesCurveView(const Curve& c, int h, int w, int y, int x);
+    CursesCurveView(const Curve& c, int h, int w, int y, int x,
+                    int color_pair = 2);
 
     ~CursesCurveView() noexcept;
 
