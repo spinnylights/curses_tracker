@@ -16,4 +16,5 @@ curses_tracker_SOURCES = \
 	src/chk_errno.cpp \
 	src/synth.cpp \
 	src/delay.cpp \
+	src/pulse_train.cpp \
 	src/audio_sdl.cpp

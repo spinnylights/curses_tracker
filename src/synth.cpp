@@ -1,4 +1,5 @@
 #include "synth.hpp"
+#include "defs.hpp"
 
 #include <fstream>
 
@@ -75,7 +76,7 @@ const std::vector<double> freqs_2_2 {
 Synth::Synth(Curves& cs,
              std::string curve_desc_low,
              std::string curve_desc_high,
-             double sample_rate)
+             time_f::rep sample_rate)
     : tick_len {1.0/(sample_rate * ticks_per_samp)},
       upramp {cs.newc()},
       downupramp {cs.newc()},
@@ -85,7 +86,8 @@ Synth::Synth(Curves& cs,
       sr {static_cast<unsigned long>(std::round(sample_rate))},
       delay_1 {delay_len_1, delay_rate_1},
       delay_2 {delay_len_2, delay_rate_2},
-      delay_3 {delay_len_3, delay_rate_3}
+      delay_3 {delay_len_3, delay_rate_3},
+      chord_switch {1.0/sample_rate, time_f(4.0)}
 {
     for (auto&& f : freqs) {
         auto cl = cs.newc();
@@ -143,23 +145,26 @@ Synth::stereo_sample Synth::sample()
     }
 
     constexpr double lfo_rate = 1.0 / 1.75;
-    double ramp_time = 0.3333 + 0.2*sine.get(pos*lfo_rate);
+    //constexpr double lfo_rate = (M_PI) / (2*M_E);
+    double lfo_sig = sine.get(pos*lfo_rate);
+    double ramp_time = 0.3333 + 0.2*lfo_sig;
     double ramp_time_2 = ramp_time * 2;
     double delay_3_ramp_time = 24.0;
     double ramp_rate = 1.0 / ramp_time;
     double ramp_rate_2 = 1.0 / ramp_time_2;
     double delay_3_ramp_rate = 1.0 / delay_3_ramp_time;
 
-    if (static_cast<uint64_t>(std::floor(pos)) % 4 == 0 && pos > 1.0) {
-        if (!in_cs2) {
-            env_pos = 0.0;
-            in_cs2 = true;
-        }
-    } else {
-        if (in_cs2) {
-            env_pos = 0.0;
-            in_cs2 = false;
-        }
+    //if (static_cast<uint64_t>(std::floor(pos)) % 4 == 0 && pos > 1.0) {
+    if (chord_switch.get(time_f(pos)) && !in_cs2 && pos > 1.0) {
+    //if (std::fmod(pos, M_PI) < 1.0 && pos > 1.0) {
+   // if (static_cast<uint64_t>(std::floor(pos/(tick_len*ticks_per_samp))) % sr == 0 && pos > 1.0) {
+        env_pos = 0.0;
+        in_cs2 = true;
+        chord_switch.rate(time_f(1.0));
+    } else if (in_cs2 && chord_switch.get(time_f(pos))) {
+        env_pos = 0.0;
+        in_cs2 = false;
+        chord_switch.rate(time_f(4.0));
     }
 
     if (shut_down_started && shutting_down == false) {
@@ -170,10 +175,32 @@ Synth::stereo_sample Synth::sample()
     if (in_cs2 && env_pos > ramp_time_2) {
         cfs = &cs2_high;
         high_chd = true;
+
+        //std::ofstream log;
+        //log.open("lfo_log.txt", std::ios::app);
+        //log << "high" << "\n"
+        //    << "----\n"
+        //    << "pos         : " << pos << "\n"
+        //    << "lfo         : " << lfo_sig << "\n"
+        //    << "lfo @ floor : " << sine.get(std::floor(pos)*lfo_rate) << "\n"
+        //    << "env_pos     : " << env_pos << "\n"
+        //    << "\n";
+        //log.close();
     } else if (!in_cs2 && env_pos > ramp_time_2) {
         cfs = &cs1_low;
         //cfs = &cs2_high;
         high_chd = false;
+
+        //std::ofstream log;
+        //log.open("lfo_log.txt", std::ios::app);
+        //log << "low" << "\n"
+        //    << "---\n"
+        //    << "pos         : " << pos << "\n"
+        //    << "lfo         : " << lfo_sig << "\n"
+        //    << "lfo @ floor : " << sine.get(std::floor(pos)*lfo_rate) << "\n"
+        //    << "env_pos     : " << env_pos << "\n"
+        //    << "\n";
+        //log.close();
     }
 
     size_t i = 0;
@@ -189,10 +216,16 @@ Synth::stereo_sample Synth::sample()
         }
     }
 
+    double env_seek;
+    double env_amp;
     if (pos < 1.0) {
-        out *= upramp.get(env_pos*ramp_rate);
+        env_seek = env_pos*ramp_rate;
+        env_amp = upramp.get(env_seek);
+        out *= env_amp;
     } else {
-        out *= downupramp.get(env_pos*ramp_rate_2);
+        env_seek = env_pos*ramp_rate_2;
+        env_amp = downupramp.get(env_seek);
+        out *= env_amp;
     }
 
     if (shutting_down) {
@@ -309,6 +342,22 @@ Synth::stereo_sample Synth::sample()
     //    << "\n";
     //log.close();
 
+    //std::ofstream log;
+    //log.open("lfo_log.txt", std::ios::app);
+    //log << "pos       : " << pos << "\n"
+    //    << "env_seek  : " << env_seek << "\n"
+    //    << "env_amp   : " << env_amp << "\n"
+    //    << "ramp_time : " << ramp_time << "\n"
+    //    << "in_cs2    : " << in_cs2 << "\n"
+    //    << "high_chd  : " << high_chd << "\n"
+    //    << "\n";
+    //log.close();
+
+    //auto rawraw = raw;
+    //if (rawraw > 1.0) { rawraw = 1.0; }
+    //else if (rawraw < -1.0) { rawraw = -1.0; }
+
+    //return {rawraw, rawraw};
     return {left_out, right_out};
     //return {out, out};
 }

@@ -5,6 +5,7 @@
 #include "exceptions.hpp"
 #include "curses_curve_view.hpp"
 #include "synth.hpp"
+#include "defs.hpp"
 
 #include <clocale>
 #include <csignal>
@@ -154,10 +155,10 @@ int main(int argc, char* argv[])
         abort();
     }
 
-    std::ofstream log;
-    log.open("samps_log.txt", std::ios::app);
-    log << "max amp: " << syn->amp_ceil() << "\n";
-    log.close();
+    //std::ofstream log;
+    //log.open("samps_log.txt", std::ios::app);
+    //log << "max amp: " << syn->amp_ceil() << "\n";
+    //log.close();
 
     return 0;
 }
