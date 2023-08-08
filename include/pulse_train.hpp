@@ -7,15 +7,18 @@ class PulseTrain {
 public:
     PulseTrain(time_f sample_rate, time_f rate);
 
-    bool get(time_f);
+    void update(time_f);
+
+    bool get() const;
 
     time_f rate() const { return rte; }
-    void   rate(time_f nrate, time_f time);
+    void   rate(time_f nrate);
 
 private:
     time_f sampr;
     time_f rte;
     time_f next = rte;
+    time_f time = time_f::zero();
 };
 
 #endif

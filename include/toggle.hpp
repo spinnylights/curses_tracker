@@ -3,9 +3,28 @@
 
 #include "defs.hpp"
 
+template<typename T>
 class Toggle {
 public:
-    sample get(bool tog, sample green, sample pink);
+    void update(bool tog)
+    {
+        if (tog) {
+            pink_side = !pink_side;
+        }
+    }
+
+    T get(T green, T pink) const
+    {
+        if (pink_side) {
+            return pink;
+        } else {
+            return green;
+        }
+    }
+
+    T get() const {
+        return pink_side;
+    }
 
 private:
     bool pink_side = false;

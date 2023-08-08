@@ -87,8 +87,8 @@ Synth::Synth(Curves& cs,
       delay_1 {delay_len_1, delay_rate_1},
       delay_2 {delay_len_2, delay_rate_2},
       delay_3 {delay_len_3, delay_rate_3},
-      chord_switch {time_f(1.0/sample_rate), time_f(4.0)},
-      chord_switch_del {time_f(0.6666)}
+      mod_chord_train {time_f(1.0/sample_rate), time_f(4.0)},
+      mod_chord_switch_del {time_f(0.6666)}
 {
     for (auto&& f : freqs) {
         auto cl = cs.newc();
@@ -155,24 +155,55 @@ Synth::stereo_sample Synth::sample()
     double ramp_rate_2 = 1.0 / ramp_time_2;
     double delay_3_ramp_rate = 1.0 / delay_3_ramp_time;
 
-    // signals (start)
 
-    bool init_chord_switch = chord_switch.get(time_f(pos));
+    /* modules (start) */
 
-    chord_switch_del.length(time_f(ramp_time_2));
-    bool switch_chords = chord_switch_del.get(init_chord_switch, time_f(pos));
+    mod_chord_train.update(time_f(pos));
+    bool modv_init_chord_switch = mod_chord_train.get();
 
-    // signals (end)
+    mod_chord_switch_del.length(time_f(ramp_time_2));
 
-    if (init_chord_switch) {
-        if (in_cs2) {
-            env_pos = 0.0;
-            in_cs2 = false;
-            chord_switch.rate(time_f(4.0), time_f(pos));
+    chord_toggle.update(mod_chord_train.get());
+
+    /* modules (end) */
+
+
+    // some notes...
+    // in_cs2 only lives over here
+    // env_pos is used below in one section for envelopes, incr at end
+    // high_chd is used only to switch between cfs
+    //
+    // what does in_cs2 accomplish?
+    //     it's false at first
+    //     it toggles whenever init_chord_switch goes off
+    //     whenever it toggles, env_pos is reset, and chord_switch changes rate
+    //
+    //     when switch_chords goes off, it's used to pick cfs
+    //     switch_chords comes ramp_time_2 s. after init_chord_swich
+    // 
+    // what about chord_toggle?
+    //     emits a continuous signal, either low_tog or high_tog
+    //     starts at low_tog
+    //     toggles whenever switch_chords goes off
+    //
+    // in_cs2 is also a continuous signal in a sense, but it toggles with
+    // init_chord_switch, not switch_chords
+    //
+    // with the existing algorithm, there's a sort of "overlapping windows"
+    // thing where like, every time switch_chords goes off, cfs and high_chd are
+    // updated, but what values they get are determined by in_cs2, which toggles
+    // through init_chord_switch ramp_time_2 s. prior
+    //
+    // with my first attempt at using chord_toggle, the behavior changes so that
+    // switch_chords determines which chord is used instead of init_chord_switch
+
+    if (mod_chord_train.get()) {
+        env_pos = 0.0;
+
+        if (chord_toggle.get()) {
+            mod_chord_train.rate(time_f(1.0));
         } else {
-            env_pos = 0.0;
-            in_cs2 = true;
-            chord_switch.rate(time_f(1.0), time_f(pos));
+            mod_chord_train.rate(time_f(4.0));
         }
     }
 
@@ -181,8 +212,8 @@ Synth::stereo_sample Synth::sample()
         shutting_down = true;
     }
 
-    if (switch_chords) {
-        if (in_cs2) {
+    if (mod_chord_switch_del.get(mod_chord_train.get(), time_f(pos))) {
+        if (chord_toggle.get()) {
             cfs = &cs2_high;
             high_chd = true;
         } else {

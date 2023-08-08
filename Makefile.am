@@ -28,4 +28,7 @@ tests_SOURCES = \
 	test/pulse_delay.cpp \
 	src/pulse_train.cpp \
 	test/pulse_train.cpp \
+	src/toggle.cpp \
+	test/toggle.cpp \
+	test/transistor.cpp \
 	test/main.cpp
