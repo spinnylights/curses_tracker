@@ -3,16 +3,15 @@
 #include <doctest.h>
 
 TEST_CASE("pulse train") {
-    time_f sampr {1/48000.0};
-    time_f rate {1};
-    PulseTrain pt {sampr, rate};
+    time_f rate {0.0009765625};
+    PulseTrain pt {rate};
 
-    pt.update(rate/2);
-    CHECK(pt.get() == false);
-    pt.update(rate/2);
-    CHECK(pt.get() == true);
-    pt.update(rate/2);
-    CHECK(pt.get() == false);
-    pt.update(rate/2);
-    CHECK(pt.get() == true);
+    for (int i = 0; i < 16; ++i) {
+        pt.update(rate/2);
+        if (i % 2 == 0) {
+            CHECK(pt.get() == false);
+        } else {
+            CHECK(pt.get() == true);
+        }
+    }
 }
