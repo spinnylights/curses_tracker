@@ -1,4 +1,4 @@
-bin_PROGRAMS = curses_tracker
+bin_PROGRAMS = curses_tracker tests
 
 curses_tracker_CXXFLAGS = -I$(top_srcdir)/include $(SDL_CFLAGS) $(CURSES_CFLAGS) $(SQLITE3_CFLAGS)
 curses_tracker_LDADD = $(SDL_LIBS) $(CURSES_LIBS) $(SQLITE3_LDFLAGS)
@@ -17,4 +17,15 @@ curses_tracker_SOURCES = \
 	src/synth.cpp \
 	src/delay.cpp \
 	src/pulse_train.cpp \
+	src/pulse_delay.cpp \
+	src/toggle.cpp \
 	src/audio_sdl.cpp
+
+tests_CXXFLAGS = $(curses_tracker_CXXFLAGS) -I/usr/include/doctest/ -I/usr/local/include/doctest
+tests_LDADD = $(curses_tracker_LDADD)
+tests_SOURCES = \
+	src/pulse_delay.cpp \
+	test/pulse_delay.cpp \
+	src/pulse_train.cpp \
+	test/pulse_train.cpp \
+	test/main.cpp

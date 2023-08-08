@@ -87,7 +87,8 @@ Synth::Synth(Curves& cs,
       delay_1 {delay_len_1, delay_rate_1},
       delay_2 {delay_len_2, delay_rate_2},
       delay_3 {delay_len_3, delay_rate_3},
-      chord_switch {1.0/sample_rate, time_f(4.0)}
+      chord_switch {time_f(1.0/sample_rate), time_f(4.0)},
+      chord_switch_del {time_f(0.6666)}
 {
     for (auto&& f : freqs) {
         auto cl = cs.newc();
@@ -154,17 +155,25 @@ Synth::stereo_sample Synth::sample()
     double ramp_rate_2 = 1.0 / ramp_time_2;
     double delay_3_ramp_rate = 1.0 / delay_3_ramp_time;
 
-    //if (static_cast<uint64_t>(std::floor(pos)) % 4 == 0 && pos > 1.0) {
-    if (chord_switch.get(time_f(pos)) && !in_cs2 && pos > 1.0) {
-    //if (std::fmod(pos, M_PI) < 1.0 && pos > 1.0) {
-   // if (static_cast<uint64_t>(std::floor(pos/(tick_len*ticks_per_samp))) % sr == 0 && pos > 1.0) {
-        env_pos = 0.0;
-        in_cs2 = true;
-        chord_switch.rate(time_f(1.0));
-    } else if (in_cs2 && chord_switch.get(time_f(pos))) {
-        env_pos = 0.0;
-        in_cs2 = false;
-        chord_switch.rate(time_f(4.0));
+    // signals (start)
+
+    bool init_chord_switch = chord_switch.get(time_f(pos));
+
+    chord_switch_del.length(time_f(ramp_time_2));
+    bool switch_chords = chord_switch_del.get(init_chord_switch, time_f(pos));
+
+    // signals (end)
+
+    if (init_chord_switch) {
+        if (in_cs2) {
+            env_pos = 0.0;
+            in_cs2 = false;
+            chord_switch.rate(time_f(4.0), time_f(pos));
+        } else {
+            env_pos = 0.0;
+            in_cs2 = true;
+            chord_switch.rate(time_f(1.0), time_f(pos));
+        }
     }
 
     if (shut_down_started && shutting_down == false) {
@@ -172,35 +181,14 @@ Synth::stereo_sample Synth::sample()
         shutting_down = true;
     }
 
-    if (in_cs2 && env_pos > ramp_time_2) {
-        cfs = &cs2_high;
-        high_chd = true;
-
-        //std::ofstream log;
-        //log.open("lfo_log.txt", std::ios::app);
-        //log << "high" << "\n"
-        //    << "----\n"
-        //    << "pos         : " << pos << "\n"
-        //    << "lfo         : " << lfo_sig << "\n"
-        //    << "lfo @ floor : " << sine.get(std::floor(pos)*lfo_rate) << "\n"
-        //    << "env_pos     : " << env_pos << "\n"
-        //    << "\n";
-        //log.close();
-    } else if (!in_cs2 && env_pos > ramp_time_2) {
-        cfs = &cs1_low;
-        //cfs = &cs2_high;
-        high_chd = false;
-
-        //std::ofstream log;
-        //log.open("lfo_log.txt", std::ios::app);
-        //log << "low" << "\n"
-        //    << "---\n"
-        //    << "pos         : " << pos << "\n"
-        //    << "lfo         : " << lfo_sig << "\n"
-        //    << "lfo @ floor : " << sine.get(std::floor(pos)*lfo_rate) << "\n"
-        //    << "env_pos     : " << env_pos << "\n"
-        //    << "\n";
-        //log.close();
+    if (switch_chords) {
+        if (in_cs2) {
+            cfs = &cs2_high;
+            high_chd = true;
+        } else {
+            cfs = &cs1_low;
+            high_chd = false;
+        }
     }
 
     size_t i = 0;

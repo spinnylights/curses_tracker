@@ -5,6 +5,8 @@
 #include "curves.hpp"
 #include "delay.hpp"
 #include "pulse_train.hpp"
+#include "pulse_delay.hpp"
+#include "toggle.hpp"
 
 #include <memory>
 #include <queue>
@@ -55,6 +57,8 @@ private:
     Delay delay_2;
     Delay delay_3;
     PulseTrain chord_switch;
+    PulseDelay chord_switch_del;
+    Toggle chord_toggle;
     std::queue<samp_t>::size_type delay_len = std::round(sr * 4.2);
     Synth::samp_t max_amp = 0.0;
     double pos = 0.0; // in the long run maybe not
