@@ -17,7 +17,6 @@ public:
 private:
     time_f sampr;
     time_f rte;
-    time_f next = rte;
     bool on;
 };
 
