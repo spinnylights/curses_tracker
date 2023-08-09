@@ -37,9 +37,9 @@ constexpr ticks ticks_per_sec =
     std::chrono::round<ticks>(std::chrono::duration<std::uintmax_t>(1));
 constexpr ticks ticks_per_samp {ticks_per_sec / inner_sr};
 
-constexpr ticks tics(double f)
+constexpr ticks tics(long double f)
 {
-    return std::chrono::round<ticks>(std::chrono::duration<double>(f));
+    return std::chrono::round<ticks>(std::chrono::duration<long double>(f));
 }
 
 #endif
