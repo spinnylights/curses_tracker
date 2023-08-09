@@ -1,5 +1,6 @@
 #include "audio_sdl.hpp"
 #include "sdl_util.hpp"
+#include "defs.hpp"
 
 #include <cstring>
 
@@ -14,7 +15,9 @@ auto open_dev(const SDL_AudioSpec& want, SDL_AudioSpec& have)
                                    open_for_playback,
                                    &want,
                                    &have,
-                                   SDL_AUDIO_ALLOW_ANY_CHANGE);
+                                   SDL_AUDIO_ALLOW_FORMAT_CHANGE
+                                   | SDL_AUDIO_ALLOW_CHANNELS_CHANGE
+                                   | SDL_AUDIO_ALLOW_SAMPLES_CHANGE);
 
     if (out == 0) {
         throw std::runtime_error("couldn't open audio device: "
@@ -59,7 +62,7 @@ Audio::Audio(struct data nd)
     SDL_AudioSpec want {};
     SDL_AudioSpec have {};
 
-    want.freq     = 48000;
+    want.freq     = inner_sr;
     want.format   = AUDIO_F32;
     want.channels = 2;
     want.samples  = 1 << 12;

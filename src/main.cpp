@@ -14,6 +14,8 @@
 #include <stdexcept>
 #include <filesystem>
 #include <fstream>
+#include <ratio>
+#include <iomanip>
 
 volatile sig_atomic_t interrupted = 0;
 volatile sig_atomic_t needs_shutdown = 0;
@@ -52,6 +54,15 @@ void set_handlers()
 
 int main(int argc, char* argv[])
 {
+    //using namespace std::chrono;
+    //using std::ratio;
+    //std::cout << std::setprecision(15);
+    //std::cout << "fs:       " << duration<double, std::femto>(ticks(1)).count() << '\n';
+    //std::cout << "440 Hz:   " << duration<double>(round<ticks>(duration<std::uintmax_t, ratio<1,440>>(1))).count() << '\n';
+    //std::cout << "440 Hz f: " << 1/440.0 << '\n';
+    //std::cout << "hours:    " << round<duration<std::uintmax_t, ratio<3600>>>(ticks(UINTMAX_MAX)).count() << '\n';
+    //return 0;
+
     setlocale(LC_CTYPE, "");
     setlocale(LC_COLLATE, "");
 

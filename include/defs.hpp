@@ -17,4 +17,18 @@ typedef double sample;
 
 typedef std::tuple<sample, sample> stereo_sample;
 
+template<std::intmax_t SampleRate>
+using ticks_sr = std::chrono::duration<
+    std::uintmax_t,
+    std::ratio<SampleRate, (1l << 62)>
+>;
+
+// fs:       10.4083408558608
+// hours:    11 (approx.)
+//
+// 440 Hz cast:    0.00227272727272229
+// 440 Hz 1/440.0: 0.00227272727272727
+constexpr std::intmax_t inner_sr = 48000;
+typedef ticks_sr<inner_sr> ticks;
+
 #endif
