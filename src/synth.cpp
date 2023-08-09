@@ -158,15 +158,13 @@ Synth::stereo_sample Synth::sample()
     // signals (start)
 
     chord_switch.update(time_f(pos));
-    bool init_chord_switch = chord_switch.get();
 
     chord_switch_del.length(time_f(ramp_time_2));
-    chord_switch_del.update(init_chord_switch, time_f(pos));
-    bool switch_chords = chord_switch_del.get();
+    chord_switch_del.update(chord_switch.get(), time_f(pos));
 
     // signals (end)
 
-    if (init_chord_switch) {
+    if (chord_switch.get()) {
         if (in_cs2) {
             env_pos = 0.0;
             in_cs2 = false;
@@ -183,7 +181,7 @@ Synth::stereo_sample Synth::sample()
         shutting_down = true;
     }
 
-    if (switch_chords) {
+    if (chord_switch_del.get()) {
         if (in_cs2) {
             cfs = &cs2_high;
             high_chd = true;
