@@ -7,17 +7,14 @@
 
 class PulseTrain {
 public:
-    PulseTrain(ticks rate);
     PulseTrain(time_f rate);
 
-    void update(ticks interv);
-    void update(time_f interv);
+    void update(time_f);
 
     bool get() const;
 
-    ticks rate() const { return rte; }
-    void  rate(ticks nrate);
-    void  rate(time_f nrate);
+    time_f rate() const { return rte; }
+    void   rate(time_f nrate);
 
 private:
     // the way this works is like...

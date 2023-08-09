@@ -19,13 +19,10 @@ typedef double sample;
 typedef std::tuple<sample, sample> stereo_sample;
 
 typedef std::chrono::duration<
-    //unsigned long long,
     unsigned long long,
-    std::ratio<1,1ul << 55>
-    //std::ratio<1,48000*256>
-    //std::ratio<1,1 << 16>
-> ticks;
-ticks operator ""_t(unsigned long long);
+    std::ratio<1,1ul << 32>>
+ticks;
+ticks operator ""_ts(unsigned long long);
 constexpr ticks ticks_per_sec {
     std::chrono::duration<ticks::rep, std::ratio<1,1>>(1)
 };

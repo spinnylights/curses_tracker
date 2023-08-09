@@ -3,43 +3,30 @@
 #include <doctest.h>
 
 TEST_CASE("pulse delay (static length)") {
-    time_f lenf {1};
-    ticks len {std::chrono::round<ticks>(lenf)};
+    time_f len {1};
     PulseDelay p {len};
 
     // emits only when len has passed
-    p.update(true, ticks(0));
-    CHECK(p.get() == false);
-    p.update(false, len/2);
-    CHECK(p.get() == false);
-    p.update(false, len/2);
-    CHECK(p.get() == true);
-    p.update(false, len/2);
-    CHECK(p.get() == false);
-    p.update(false, len);
-    CHECK(p.get() == false);
+    auto start = time_f::zero();
+    CHECK(p.get(true,  start)         == false);
+    CHECK(p.get(false, start + len/2) == false);
+    CHECK(p.get(false, start + len)   == true);
+    CHECK(p.get(false, start + len)   == false);
+    CHECK(p.get(false, start + len*2) == false);
 
-    //// emits any time after len has passed
-    p.update(true, len*3);
-    CHECK(p.get() == false);
-    p.update(false, std::chrono::round<ticks>(time_f(1.1)));
-    CHECK(p.get() == true);
+    // emits any time after len has passed
+    start = len*3;
+    CHECK(p.get(true,  start)               == false);
+    CHECK(p.get(false, start + time_f(1.1)) == true);
 
     // emits multiple pulses
-    p.update(true, len*5);
-    CHECK(p.get() == false);
-    p.update(true, time_f(0.5));
-    CHECK(p.get() == false);
-    p.update(false, time_f(0.5));
-    CHECK(p.get() == true);
-    p.update(false, time_f(0.25));
-    CHECK(p.get() == false);
-    p.update(false, time_f(0.25));
-    CHECK(p.get() == true);
-    p.update(false, time_f(0.25));
-    CHECK(p.get() == false);
-    p.update(false, time_f(1.5));
-    CHECK(p.get() == false);
+    start = len*5;
+    CHECK(p.get(true,  start)               == false);
+    CHECK(p.get(true,  start + time_f(0.5)) == false);
+    CHECK(p.get(false, start + time_f(1.0)) == true);
+    CHECK(p.get(true,  start + time_f(1.5)) == true);
+    CHECK(p.get(false, start + time_f(2.0)) == false);
+    CHECK(p.get(false, start + time_f(2.5)) == true);
 }
 
 TEST_CASE("pulse delay (changing length)") {
@@ -48,13 +35,9 @@ TEST_CASE("pulse delay (changing length)") {
 
     auto start = time_f::zero();
 
-    p.update(true, ticks(0));
-    CHECK(p.get() == false);
-    p.update(true, len/2);
-    CHECK(p.get() == false);
+    CHECK(p.get(true,  start)           == false);
+    CHECK(p.get(false, start + len/2)   == false);
     p.length(len*3/4);
-    p.update(true, len*1/4);
-    CHECK(p.get() == true);
-    p.update(true, len*1/4);
-    CHECK(p.get() == false);
+    CHECK(p.get(false, start + len*3/4) == true);
+    CHECK(p.get(false, start + len)     == false);
 }
