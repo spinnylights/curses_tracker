@@ -7,8 +7,12 @@ TEST_CASE("pulse train") {
     time_f rate {1};
     PulseTrain pt {sampr, rate};
 
-    CHECK(pt.get(rate/2)   == false);
-    CHECK(pt.get(rate)     == true);
-    CHECK(pt.get(rate*7/4) == false);
-    CHECK(pt.get(rate*2)   == true);
+    pt.update(rate/2);
+    CHECK(pt.get() == false);
+    pt.update(rate);
+    CHECK(pt.get() == true);
+    pt.update(rate*7/4);
+    CHECK(pt.get() == false);
+    pt.update(rate*2);
+    CHECK(pt.get() == true);
 }

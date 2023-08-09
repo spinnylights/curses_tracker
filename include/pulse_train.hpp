@@ -7,7 +7,9 @@ class PulseTrain {
 public:
     PulseTrain(time_f sample_rate, time_f rate);
 
-    bool get(time_f);
+    void update(time_f time);
+
+    bool get() const;
 
     time_f rate() const { return rte; }
     void   rate(time_f nrate, time_f time);
@@ -16,6 +18,7 @@ private:
     time_f sampr;
     time_f rte;
     time_f next = rte;
+    bool on;
 };
 
 #endif

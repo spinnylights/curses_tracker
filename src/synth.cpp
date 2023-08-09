@@ -157,7 +157,8 @@ Synth::stereo_sample Synth::sample()
 
     // signals (start)
 
-    bool init_chord_switch = chord_switch.get(time_f(pos));
+    chord_switch.update(time_f(pos));
+    bool init_chord_switch = chord_switch.get();
 
     chord_switch_del.length(time_f(ramp_time_2));
     bool switch_chords = chord_switch_del.get(init_chord_switch, time_f(pos));
