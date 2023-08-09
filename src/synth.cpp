@@ -77,8 +77,7 @@ Synth::Synth(Curves& cs,
              std::string curve_desc_low,
              std::string curve_desc_high,
              time_f::rep sample_rate)
-    : tick_len {1.0/(sample_rate * ticks_per_samp)},
-      upramp {cs.newc()},
+    : upramp {cs.newc()},
       downupramp {cs.newc()},
       downramp {cs.newc()},
       delay_2_start_env {cs.newc()},
@@ -88,7 +87,8 @@ Synth::Synth(Curves& cs,
       delay_2 {delay_len_2, delay_rate_2},
       delay_3 {delay_len_3, delay_rate_3},
       mod_chord_train {time_f(4.0)},
-      mod_chord_switch_del {time_f(0.6666)}
+      mod_chord_switch_del {time_f(0.6666)},
+      tick_samps {std::chrono::round<ticks>(time_f(1.0/sample_rate))}
 {
     for (auto&& f : freqs) {
         auto cl = cs.newc();
@@ -145,6 +145,7 @@ Synth::stereo_sample Synth::sample()
         return {out, out};
     }
 
+    auto pos = time_f(posd).count();
     constexpr double lfo_rate = 1.0 / 1.75;
     //constexpr double lfo_rate = (M_PI) / (2*M_E);
     double lfo_sig = sine.get(pos*lfo_rate);
@@ -159,8 +160,11 @@ Synth::stereo_sample Synth::sample()
     /* modules (start) */
 
     //mod_chord_train.update(time_f(pos));
-    mod_chord_train.update(time_f(1.0/sr));
+    //mod_chord_train.update(time_f(1.0/sr));
+    mod_chord_train.update(tick_samps);
+    //mod_chord_train.update(tick_samps*1.1);
 
+    mod_chord_switch_del.update(mod_chord_train.get(), tick_samps);
     mod_chord_switch_del.length(time_f(ramp_time_2));
 
     chord_toggle.update(mod_chord_train.get());
@@ -198,7 +202,7 @@ Synth::stereo_sample Synth::sample()
     // switch_chords determines which chord is used instead of init_chord_switch
 
     if (mod_chord_train.get()) {
-        env_pos = 0.0;
+        env_posd = ticks(0);
 
         if (chord_toggle.get()) {
             mod_chord_train.rate(time_f(1.0));
@@ -208,11 +212,11 @@ Synth::stereo_sample Synth::sample()
     }
 
     if (shut_down_started && shutting_down == false) {
-        env_pos = 0.0;
+        env_posd = ticks(0);
         shutting_down = true;
     }
 
-    if (mod_chord_switch_del.get(mod_chord_train.get(), time_f(pos))) {
+    if (mod_chord_switch_del.get()) {
         if (chord_toggle.get()) {
             cfs = &cs2_high;
             high_chd = true;
@@ -235,6 +239,7 @@ Synth::stereo_sample Synth::sample()
         }
     }
 
+    auto env_pos = time_f(env_posd).count();
     double env_seek;
     double env_amp;
     if (pos < 1.0) {
@@ -327,8 +332,10 @@ Synth::stereo_sample Synth::sample()
     left_out *= final_amp_adj;
     right_out *= final_amp_adj;
 
-    pos += ticks_per_samp*tick_len;
-    env_pos += ticks_per_samp*tick_len;
+    //pos += ticks_per_samp*tick_len;
+    //env_pos += ticks_per_samp*tick_len;
+    posd += tick_samps;
+    env_posd += tick_samps;
 
     if (preout > max_amp) {
         max_amp = preout;

@@ -61,9 +61,12 @@ private:
     Toggle<bool> chord_toggle;
     std::queue<samp_t>::size_type delay_len = std::round(sr * 4.2);
     Synth::samp_t max_amp = 0.0;
-    double pos = 0.0; // in the long run maybe not
-    double tick_len;
-    double env_pos = 0.0;
+    //double pos = 0.0; // in the long run maybe not
+    //double tick_len;
+    //double env_pos = 0.0;
+    ticks posd {0};
+    ticks env_posd {0};
+    ticks tick_samps;
     unsigned samps_to_wait = sr * 0;
     const std::vector<std::tuple<Curve, double>>* cfs = &cs1_low;
     bool high_chd = false;

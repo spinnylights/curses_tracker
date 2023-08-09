@@ -54,7 +54,11 @@ int main(int argc, char* argv[])
 {
     //using namespace std::chrono;
     //using std::ratio;
-    //std::cout << ticks(duration<uint64_t, ratio<1,1>>(1)).count() << '\n';
+    //std::cout << std::setprecision(std::numeric_limits<double>::max_digits10);
+    //std::cout << 1.0/48000 << '\n';
+    //std::cout << round<ticks>(duration<double>(1.0/48000)).count() << '\n';
+    //std::cout << duration<double>(round<ticks>(duration<double>(1.0/48000))).count() << '\n';
+    //std::cout << ticks(duration<uint64_t>(1)).count() << '\n';
     //std::cout << ticks::max().count() << '\n';
     //return 0;
     setlocale(LC_CTYPE, "");

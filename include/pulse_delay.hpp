@@ -13,17 +13,25 @@ public:
         : PulseDelay(time_f(rate))
     {};
 
-    bool get(bool sig, time_f t);
-    bool get(bool sig, time_f::rep t) { return get(sig, time_f(t)); }
+    void update(bool sig, ticks interv);
+    void update(bool sig, time_f interv)
+    {
+        update(sig, std::chrono::round<ticks>(interv));
+    }
+
+    bool get();
 
     time_f length() const { return time_f(len); }
-    void   length(time_f nrate) { len = nrate; }
+    void   length(time_f nrate) { len = std::chrono::round<ticks>(nrate); }
 
 private:
-    std::list<time_f> arrivals;
-    time_f len;
-    time_f last_time = time_f::zero();
-    time_f elapsed = time_f::zero();
+    std::list<ticks> arrivals;
+    //time_f len;
+    //time_f last_time = time_f::zero();
+    //time_f elapsed = time_f::zero();
+    ticks len;
+    ticks last_time = ticks::zero();
+    ticks time = ticks::zero();
     bool on = false;
 };
 

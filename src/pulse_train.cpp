@@ -2,13 +2,16 @@
 
 #include <cmath>
 
-PulseTrain::PulseTrain(time_f nrte)
-    : rte {std::chrono::round<ticks>(nrte)}
+PulseTrain::PulseTrain(ticks nrte)
+    : rte {nrte}
 {}
 
-void PulseTrain::update(time_f interv)
+PulseTrain::PulseTrain(time_f nrte)
+    : PulseTrain(std::chrono::round<ticks>(nrte))
+{}
+
+void PulseTrain::update(ticks interv)
 {
-    pos += std::chrono::round<ticks>(interv);
     auto memo = pos;
     pos %= rte;
     if (pos < memo) {
@@ -16,6 +19,12 @@ void PulseTrain::update(time_f interv)
     } else {
         on = false;
     }
+    pos += interv;
+}
+
+void PulseTrain::update(time_f interv)
+{
+    update(std::chrono::round<ticks>(interv));
 }
 
 bool PulseTrain::get() const
@@ -23,7 +32,12 @@ bool PulseTrain::get() const
     return on;
 }
 
+void PulseTrain::rate(ticks nrte)
+{
+    rte = nrte;
+}
+
 void PulseTrain::rate(time_f nrte)
 {
-    rte = std::chrono::round<ticks>(nrte);
+    rate(std::chrono::round<ticks>(nrte));
 }
