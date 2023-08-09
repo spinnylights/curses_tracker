@@ -2,15 +2,14 @@
 
 #include <cmath>
 
-PulseTrain::PulseTrain(time_f sample_rate, time_f nrte)
-    : sampr {sample_rate},
-      rte {nrte}
+PulseTrain::PulseTrain(ticks nrte)
+    : rte {nrte}
 {}
 
-void PulseTrain::update(time_f time)
+void PulseTrain::update(ticks time)
 {
-    time_f::rep mod_time = std::fmod(time.count(), rte.count());
-    if (mod_time <= sampr.count()) {
+    ticks mod_time = time % rte;
+    if (mod_time <= ticks_per_samp) {
         on = true;
     } else {
         on = false;
@@ -22,7 +21,7 @@ bool PulseTrain::get() const
     return on;
 }
 
-void PulseTrain::rate(time_f nrte)
+void PulseTrain::rate(ticks nrte)
 {
     rte = nrte;
 }

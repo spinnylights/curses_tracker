@@ -3,9 +3,8 @@
 #include <doctest.h>
 
 TEST_CASE("pulse train") {
-    time_f sampr {1/48000.0};
-    time_f rate {1};
-    PulseTrain pt {sampr, rate};
+    auto rate = tics(1.0);
+    PulseTrain pt {rate};
 
     pt.update(rate/2);
     CHECK(pt.get() == false);

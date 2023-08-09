@@ -5,18 +5,18 @@
 
 class PulseTrain {
 public:
-    PulseTrain(time_f sample_rate, time_f rate);
+    PulseTrain(ticks rate);
 
-    void update(time_f time);
+    void update(ticks time);
 
     bool get() const;
 
-    time_f rate() const { return rte; }
-    void   rate(time_f nrate);
+    ticks rate() const { return rte; }
+    void   rate(ticks nrate);
 
 private:
-    time_f sampr;
-    time_f rte;
+    ticks sampr;
+    ticks rte;
     bool on;
 };
 
