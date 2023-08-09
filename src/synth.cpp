@@ -163,7 +163,7 @@ Synth::stereo_sample Synth::sample()
     chord_switch_del.update(chord_switch.get(), time_f(pos));
 
     chord_toggle.update(chord_switch.get());
-    chord_switch.rate(time_f(chord_toggle.get(4.0, 1.0)), time_f(pos));
+    chord_switch.rate(time_f(chord_toggle.get(4.0, 1.0)));
 
     // signals (end)
 

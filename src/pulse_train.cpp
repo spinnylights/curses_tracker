@@ -22,7 +22,7 @@ bool PulseTrain::get() const
     return on;
 }
 
-void PulseTrain::rate(time_f nrte, time_f time)
+void PulseTrain::rate(time_f nrte)
 {
     rte = nrte;
 }
