@@ -3,11 +3,11 @@
 #include <doctest.h>
 
 TEST_CASE("pulse delay (static length)") {
-    time_f len {1};
+    auto len = ticks_per_sec;
     PulseDelay p {len};
 
     // emits only when len has passed
-    auto start = time_f::zero();
+    auto start = ticks::zero();
     p.update(true,  start);
     CHECK(p.get() == false);
     p.update(false, start + len/2);
@@ -23,30 +23,30 @@ TEST_CASE("pulse delay (static length)") {
     start = len*3;
     p.update(true,  start);
     CHECK(p.get() == false);
-    p.update(false, start + time_f(1.1));
+    p.update(false, start + tics(1.1));
     CHECK(p.get() == true);
 
     // emits multiple pulses
     start = len*5;
     p.update(true,  start);
     CHECK(p.get() == false);
-    p.update(true,  start + time_f(0.5));
+    p.update(true,  start + ticks_per_sec/2);
     CHECK(p.get() == false);
-    p.update(false, start + time_f(1.0));
+    p.update(false, start + ticks_per_sec);
     CHECK(p.get() == true);
-    p.update(true,  start + time_f(1.5));
+    p.update(true,  start + ticks_per_sec*3/2);
     CHECK(p.get() == true);
-    p.update(false, start + time_f(2.0));
+    p.update(false, start + ticks_per_sec*2);
     CHECK(p.get() == false);
-    p.update(false, start + time_f(2.5));
+    p.update(false, start + ticks_per_sec*5/2);
     CHECK(p.get() == true);
 }
 
 TEST_CASE("pulse delay (changing length)") {
-    time_f len {1};
+    auto len = tics(1);
     PulseDelay p {len};
 
-    auto start = time_f::zero();
+    auto start = ticks::zero();
 
     p.update(true,  start);
     CHECK(p.get() == false);

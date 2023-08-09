@@ -25,8 +25,8 @@ using ticks_sr = std::chrono::duration<
     std::ratio<SampleRate, (1l << samp_frac_bits)>
 >;
 
-// fs:       10.4083408558608
-// hours:    11 (approx.)
+// min (fs):       10.4083408558608
+// max (hours):    11 (approx.)
 //
 // 440 Hz cast:    0.00227272727272229
 // 440 Hz 1/440.0: 0.00227272727272727

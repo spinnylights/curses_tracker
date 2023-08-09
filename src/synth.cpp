@@ -88,7 +88,7 @@ Synth::Synth(Curves& cs,
       delay_2 {delay_len_2, delay_rate_2},
       delay_3 {delay_len_3, delay_rate_3},
       chord_switch {tics(4.0)},
-      chord_switch_del {time_f(0.6666)}
+      chord_switch_del {tics(0.6666)}
 {
     for (auto&& f : freqs) {
         auto cl = cs.newc();
@@ -161,8 +161,8 @@ Synth::stereo_sample Synth::sample()
 
     chord_switch.update(posd);
 
-    chord_switch_del.length(time_f(ramp_time_2));
-    chord_switch_del.update(chord_switch.get(), time_f(pos));
+    chord_switch_del.length(tics(ramp_time_2));
+    chord_switch_del.update(chord_switch.get(), posd);
 
     chord_toggle.update(chord_switch.get());
     chord_switch.rate(tics(chord_toggle.get(4.0, 1.0)));
