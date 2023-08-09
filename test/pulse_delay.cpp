@@ -8,25 +8,38 @@ TEST_CASE("pulse delay (static length)") {
 
     // emits only when len has passed
     auto start = time_f::zero();
-    CHECK(p.get(true,  start)         == false);
-    CHECK(p.get(false, start + len/2) == false);
-    CHECK(p.get(false, start + len)   == true);
-    CHECK(p.get(false, start + len)   == false);
-    CHECK(p.get(false, start + len*2) == false);
+    p.update(true,  start);
+    CHECK(p.get() == false);
+    p.update(false, start + len/2);
+    CHECK(p.get() == false);
+    p.update(false, start + len);
+    CHECK(p.get() == true);
+    p.update(false, start + len);
+    CHECK(p.get() == false);
+    p.update(false, start + len*2);
+    CHECK(p.get() == false);
 
     // emits any time after len has passed
     start = len*3;
-    CHECK(p.get(true,  start)               == false);
-    CHECK(p.get(false, start + time_f(1.1)) == true);
+    p.update(true,  start);
+    CHECK(p.get() == false);
+    p.update(false, start + time_f(1.1));
+    CHECK(p.get() == true);
 
     // emits multiple pulses
     start = len*5;
-    CHECK(p.get(true,  start)               == false);
-    CHECK(p.get(true,  start + time_f(0.5)) == false);
-    CHECK(p.get(false, start + time_f(1.0)) == true);
-    CHECK(p.get(true,  start + time_f(1.5)) == true);
-    CHECK(p.get(false, start + time_f(2.0)) == false);
-    CHECK(p.get(false, start + time_f(2.5)) == true);
+    p.update(true,  start);
+    CHECK(p.get() == false);
+    p.update(true,  start + time_f(0.5));
+    CHECK(p.get() == false);
+    p.update(false, start + time_f(1.0));
+    CHECK(p.get() == true);
+    p.update(true,  start + time_f(1.5));
+    CHECK(p.get() == true);
+    p.update(false, start + time_f(2.0));
+    CHECK(p.get() == false);
+    p.update(false, start + time_f(2.5));
+    CHECK(p.get() == true);
 }
 
 TEST_CASE("pulse delay (changing length)") {
@@ -35,9 +48,13 @@ TEST_CASE("pulse delay (changing length)") {
 
     auto start = time_f::zero();
 
-    CHECK(p.get(true,  start)           == false);
-    CHECK(p.get(false, start + len/2)   == false);
+    p.update(true,  start);
+    CHECK(p.get() == false);
+    p.update(false, start + len/2);
+    CHECK(p.get() == false);
     p.length(len*3/4);
-    CHECK(p.get(false, start + len*3/4) == true);
-    CHECK(p.get(false, start + len)     == false);
+    p.update(false, start + len*3/4);
+    CHECK(p.get() == true);
+    p.update(false, start + len);
+    CHECK(p.get() == false);
 }

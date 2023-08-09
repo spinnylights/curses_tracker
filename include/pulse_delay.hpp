@@ -13,8 +13,10 @@ public:
         : PulseDelay(time_f(rate))
     {};
 
-    bool get(bool sig, time_f t);
-    bool get(bool sig, time_f::rep t) { return get(sig, time_f(t)); }
+    void update(bool sig, time_f t);
+    void update(bool sig, time_f::rep t) { update(sig, time_f(t)); }
+
+    bool get() const;
 
     time_f length() const { return time_f(len); }
     void   length(time_f nrate) { len = nrate; }
