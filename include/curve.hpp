@@ -49,6 +49,7 @@
 
 #include "curve_db.hpp"
 #include "note.hpp"
+#include "defs.hpp"
 
 #include <cstdint>
 #include <array>
@@ -154,7 +155,6 @@ public:
     struct args {
         std::shared_ptr<CurveDB> db          = nullptr;
         DB::id_t                 id          = DB::no_id;
-        double                   sample_rate = 48000;
         std::string              name        = "";
     };
 
@@ -185,8 +185,6 @@ public:
     double last_endpos() const { return last_endp; }
     void reset_endpos() { last_endp = 0.0; }
 
-    double sr() { return sample_rate; }
-
     enum wrapmode wrapm() const { return wm; }
     void wrapm(enum wrapmode nwm) { wm = nwm; }
 
@@ -202,7 +200,6 @@ public:
 private:
     std::shared_ptr<CurveDB> db;
     double last_endp = 0.0;
-    double sample_rate;
     enum wrapmode wm = looping;
 };
 

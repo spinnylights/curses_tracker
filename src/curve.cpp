@@ -84,7 +84,7 @@ Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos) const
     double part         = 1.0;
     double inv_amp_coef = 1.0;
     double phase        = 0.0;
-    while (part*fund < c.sr()/2.0) {
+    while (part*fund < inner_sr/2.0) {
         out += std::sin(2*M_PI * part * (1.0 + phase + pos)) / inv_amp_coef;
 
         part += part_spacing;
@@ -104,7 +104,6 @@ Curve::entry_t Curve::Soidser::inner_process(Curve& c, Curve::seek_t pos) const
 Curve::Curve(struct args a)
     : db {a.db},
       id {a.id},
-      sample_rate {a.sample_rate},
       name {a.name}
 {
     if (db == nullptr) {

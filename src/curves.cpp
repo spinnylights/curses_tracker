@@ -10,7 +10,6 @@ Curve Curves::newc(std::string name)
     Curve::args a {};
     a.db = curves;
     a.name = name;
-    a.sample_rate = sample_rate;
     return {a};
 }
 
@@ -18,7 +17,6 @@ Curve Curves::newc()
 {
     Curve::args a {};
     a.db = curves;
-    a.sample_rate = sample_rate;
     return {a};
 }
 
