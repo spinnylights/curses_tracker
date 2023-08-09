@@ -66,7 +66,6 @@ private:
     double env_pos = 0.0;
     unsigned samps_to_wait = sr * 0;
     const std::vector<std::tuple<Curve, double>>* cfs = &cs1_low;
-    bool in_cs2 = false;
     bool high_chd = false;
     bool shut_down_started = false;
     bool shutting_down = false;

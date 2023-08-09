@@ -1,14 +1,8 @@
 #include "toggle.hpp"
 
-sample Toggle::get(bool tog, sample green, sample pink)
+void Toggle::update(bool tog)
 {
     if (tog) {
         pink_side = !pink_side;
-    }
-
-    if (pink_side) {
-        return pink;
-    } else {
-        return green;
     }
 }

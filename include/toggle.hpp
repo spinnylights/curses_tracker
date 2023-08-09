@@ -5,7 +5,17 @@
 
 class Toggle {
 public:
-    sample get(bool tog, sample green, sample pink);
+    void update(bool tog);
+
+    template<typename T>
+    T get(T green, T pink) const
+    {
+        if (pink_side) {
+            return pink;
+        } else {
+            return green;
+        }
+    }
 
 private:
     bool pink_side = false;

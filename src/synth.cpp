@@ -162,18 +162,13 @@ Synth::stereo_sample Synth::sample()
     chord_switch_del.length(time_f(ramp_time_2));
     chord_switch_del.update(chord_switch.get(), time_f(pos));
 
+    chord_toggle.update(chord_switch.get());
+    chord_switch.rate(time_f(chord_toggle.get(4.0, 1.0)), time_f(pos));
+
     // signals (end)
 
     if (chord_switch.get()) {
-        if (in_cs2) {
-            env_pos = 0.0;
-            in_cs2 = false;
-            chord_switch.rate(time_f(4.0), time_f(pos));
-        } else {
-            env_pos = 0.0;
-            in_cs2 = true;
-            chord_switch.rate(time_f(1.0), time_f(pos));
-        }
+        env_pos = 0.0;
     }
 
     if (shut_down_started && shutting_down == false) {
@@ -182,13 +177,8 @@ Synth::stereo_sample Synth::sample()
     }
 
     if (chord_switch_del.get()) {
-        if (in_cs2) {
-            cfs = &cs2_high;
-            high_chd = true;
-        } else {
-            cfs = &cs1_low;
-            high_chd = false;
-        }
+        cfs = chord_toggle.get(&cs1_low, &cs2_high);
+        high_chd = chord_toggle.get(false, true);
     }
 
     size_t i = 0;
