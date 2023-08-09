@@ -77,8 +77,8 @@ Synth::Synth(Curves& cs,
              std::string curve_desc_low,
              std::string curve_desc_high,
              time_f::rep sample_rate)
-    : tick_len {1.0/(sample_rate * ticks_per_samp)},
-      upramp {cs.newc()},
+//    : tick_len {1.0/(sample_rate * ticks_per_samp)},
+    : upramp {cs.newc()},
       downupramp {cs.newc()},
       downramp {cs.newc()},
       delay_2_start_env {cs.newc()},
@@ -145,6 +145,8 @@ Synth::stereo_sample Synth::sample()
         return {out, out};
     }
 
+    double pos = std::chrono::duration<double>(posd).count();
+
     constexpr double lfo_rate = 1.0 / 1.75;
     //constexpr double lfo_rate = (M_PI) / (2*M_E);
     double lfo_sig = sine.get(pos*lfo_rate);
@@ -168,11 +170,11 @@ Synth::stereo_sample Synth::sample()
     // signals (end)
 
     if (chord_switch.get()) {
-        env_pos = 0.0;
+        env_posd = ticks(0);
     }
 
     if (shut_down_started && shutting_down == false) {
-        env_pos = 0.0;
+        env_posd = ticks(0);
         shutting_down = true;
     }
 
@@ -193,6 +195,8 @@ Synth::stereo_sample Synth::sample()
             out += std::get<0>(cf).get(std::get<1>(cf)*pos);
         }
     }
+
+    double env_pos = std::chrono::duration<double>(env_posd).count();
 
     double env_seek;
     double env_amp;
@@ -286,8 +290,10 @@ Synth::stereo_sample Synth::sample()
     left_out *= final_amp_adj;
     right_out *= final_amp_adj;
 
-    pos += ticks_per_samp*tick_len;
-    env_pos += ticks_per_samp*tick_len;
+    posd += ticks_per_samp;
+    env_posd += ticks_per_samp;
+    //pos += ticks_per_samp*tick_len;
+    //env_pos += ticks_per_samp*tick_len;
 
     if (preout > max_amp) {
         max_amp = preout;

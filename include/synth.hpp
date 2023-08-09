@@ -7,13 +7,14 @@
 #include "pulse_train.hpp"
 #include "pulse_delay.hpp"
 #include "toggle.hpp"
+#include "defs.hpp"
 
 #include <memory>
 #include <queue>
 
 class Synth {
 public:
-    static constexpr double ticks_per_samp = 256;
+    //static constexpr double ticks_per_samp = 256;
 
     typedef double samp_t;
     typedef std::tuple<samp_t, samp_t> stereo_sample;
@@ -61,9 +62,11 @@ private:
     Toggle chord_toggle;
     std::queue<samp_t>::size_type delay_len = std::round(sr * 4.2);
     Synth::samp_t max_amp = 0.0;
-    double pos = 0.0; // in the long run maybe not
-    double tick_len;
-    double env_pos = 0.0;
+    //double pos = 0.0; // in the long run maybe not
+    //double tick_len;
+    //double env_pos = 0.0;
+    ticks posd {0};
+    ticks env_posd {0};
     unsigned samps_to_wait = sr * 0;
     const std::vector<std::tuple<Curve, double>>* cfs = &cs1_low;
     bool high_chd = false;

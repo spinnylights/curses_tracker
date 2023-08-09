@@ -54,15 +54,8 @@ void set_handlers()
 
 int main(int argc, char* argv[])
 {
-    //using namespace std::chrono;
-    //using std::ratio;
-    //std::cout << std::setprecision(15);
-    //std::cout << "fs:       " << duration<double, std::femto>(ticks(1)).count() << '\n';
-    //std::cout << "440 Hz:   " << duration<double>(round<ticks>(duration<std::uintmax_t, ratio<1,440>>(1))).count() << '\n';
-    //std::cout << "440 Hz f: " << 1/440.0 << '\n';
-    //std::cout << "hours:    " << round<duration<std::uintmax_t, ratio<3600>>>(ticks(UINTMAX_MAX)).count() << '\n';
-    //return 0;
-
+    auto hz_840 = tics(431.9489422711106);
+    std::cout << hz_840.count() << '\n';
     setlocale(LC_CTYPE, "");
     setlocale(LC_COLLATE, "");
 
