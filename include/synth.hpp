@@ -56,9 +56,9 @@ private:
     Delay delay_1;
     Delay delay_2;
     Delay delay_3;
-    PulseTrain mod_chord_train;
-    PulseDelay mod_chord_switch_del;
-    Toggle<bool> chord_toggle;
+    PulseTrain chord_switch;
+    PulseDelay chord_switch_del;
+    Toggle chord_toggle;
     std::queue<samp_t>::size_type delay_len = std::round(sr * 4.2);
     Synth::samp_t max_amp = 0.0;
     double pos = 0.0; // in the long run maybe not
@@ -66,6 +66,7 @@ private:
     double env_pos = 0.0;
     unsigned samps_to_wait = sr * 0;
     const std::vector<std::tuple<Curve, double>>* cfs = &cs1_low;
+    bool in_cs2 = false;
     bool high_chd = false;
     bool shut_down_started = false;
     bool shutting_down = false;
