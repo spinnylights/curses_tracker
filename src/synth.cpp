@@ -87,7 +87,7 @@ Synth::Synth(Curves& cs,
       delay_1 {delay_len_1, delay_rate_1},
       delay_2 {delay_len_2, delay_rate_2},
       delay_3 {delay_len_3, delay_rate_3},
-      mod_chord_train {time_f(4.0)},
+      mod_chord_train {time_f(1.0/sample_rate), time_f(4.0)},
       mod_chord_switch_del {time_f(0.6666)}
 {
     for (auto&& f : freqs) {
@@ -158,8 +158,8 @@ Synth::stereo_sample Synth::sample()
 
     /* modules (start) */
 
-    //mod_chord_train.update(time_f(pos));
-    mod_chord_train.update(time_f(1.0/sr));
+    mod_chord_train.update(time_f(pos));
+    bool modv_init_chord_switch = mod_chord_train.get();
 
     mod_chord_switch_del.length(time_f(ramp_time_2));
 

@@ -2,28 +2,32 @@
 
 #include <cmath>
 
-PulseTrain::PulseTrain(time_f nrte)
-    : rte {std::chrono::round<ticks>(nrte)}
+PulseTrain::PulseTrain(time_f sample_rate, time_f nrte)
+    : sampr {sample_rate},
+      rte {nrte}
 {}
 
 void PulseTrain::update(time_f interv)
 {
-    pos += std::chrono::round<ticks>(interv);
-    auto memo = pos;
-    pos %= rte;
-    if (pos < memo) {
-        on = true;
-    } else {
-        on = false;
+    time += interv;
+    if (get()) {
+        next = time + rte;
     }
 }
 
 bool PulseTrain::get() const
 {
-    return on;
+    time_f::rep mod_time = std::fmod(time.count(), rte.count());
+    if (mod_time <= sampr.count()) {
+    //if (time >= next) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void PulseTrain::rate(time_f nrte)
 {
-    rte = std::chrono::round<ticks>(nrte);
+    rte = nrte;
+    next = time + rte;
 }

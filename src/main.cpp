@@ -52,11 +52,6 @@ void set_handlers()
 
 int main(int argc, char* argv[])
 {
-    //using namespace std::chrono;
-    //using std::ratio;
-    //std::cout << ticks(duration<uint64_t, ratio<1,1>>(1)).count() << '\n';
-    //std::cout << ticks::max().count() << '\n';
-    //return 0;
     setlocale(LC_CTYPE, "");
     setlocale(LC_COLLATE, "");
 
@@ -82,13 +77,6 @@ int main(int argc, char* argv[])
 
     aud.add_synth(syn);
     aud.start_playback();
-    //std::cout << std::chrono::duration<double, std::ratio<31556952>>(
-    //                 std::chrono::duration<unsigned long, std::ratio<1,1>>(UINT64_MAX/2)
-    //             ).count() << '\n';
-
-    //std::cout << std::chrono::duration<double, std::ratio<UINT64_MAX/(1 << 14)>>(
-    //                 std::chrono::duration<unsigned long, std::ratio<1,1>>(UINT64_MAX/2)
-    //             ).count() << '\n';
 
     Curses cur;
 
