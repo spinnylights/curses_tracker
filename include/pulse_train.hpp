@@ -12,7 +12,7 @@ public:
     bool get() const;
 
     ticks rate() const { return rte; }
-    void   rate(ticks nrate);
+    void  rate(ticks nrate);
 
 private:
     ticks rte;

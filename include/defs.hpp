@@ -17,25 +17,29 @@ typedef double sample;
 
 typedef std::tuple<sample, sample> stereo_sample;
 
-constexpr unsigned samp_frac_bits = 62;
+constexpr unsigned       samp_frac_bits = 52;
+constexpr std::uintmax_t samp_frac_sz   = 1ul << samp_frac_bits;
 
 template<std::uintmax_t SampleRate>
 using ticks_sr = std::chrono::duration<
     std::uintmax_t,
-    std::ratio<SampleRate, (1l << samp_frac_bits)>
+    std::ratio<1, samp_frac_sz>
 >;
 
-// min (fs):       10.4083408558608
-// max (hours):    11 (approx.)
+//min (attoscs): 222.044604925031
+//max (minutes): 68 (approx.)
 //
-// 440 Hz cast:    0.00227272727272229
-// 440 Hz 1/440.0: 0.00227272727272727
+//440 Hz:   0.0022727272727272
+//440 Hz f: 0.00227272727272727
 constexpr std::uintmax_t inner_sr = 48000;
 typedef ticks_sr<inner_sr> ticks;
 
 constexpr ticks ticks_per_sec =
     std::chrono::round<ticks>(std::chrono::duration<std::uintmax_t>(1));
-constexpr ticks ticks_per_samp {ticks_per_sec / inner_sr};
+constexpr ticks ticks_per_samp =
+    std::chrono::round<ticks>(std::chrono::duration<std::uintmax_t,
+                                                    std::ratio<1,
+                                                               inner_sr>>(1));
 
 constexpr ticks tics(long double f)
 {
