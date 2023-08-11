@@ -165,12 +165,11 @@ Synth::stereo_sample Synth::sample()
     chord_toggle.update(chord_switch.get());
     chord_switch.rate(tics(chord_toggle.get(4.0, 1.0)));
 
+    env_pos.reset(chord_switch.get());
+
     // signals (end)
 
-    if (chord_switch.get()) {
-        env_pos.reset();
-    }
-
+    // this is sort of a placeholder hack
     if (shut_down_started && shutting_down == false) {
         env_pos.reset();
         shutting_down = true;

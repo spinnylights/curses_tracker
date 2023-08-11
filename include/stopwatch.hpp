@@ -6,7 +6,9 @@
 class Stopwatch {
 public:
     void update();
+
     void reset();
+    void reset(bool b) { if (b) reset(); }
 
     ticks  get()  const { return pos; }
     time_f getf() const { return time_f(pos); }
