@@ -8,6 +8,7 @@
 #include "pulse_delay.hpp"
 #include "toggle.hpp"
 #include "defs.hpp"
+#include "stopwatch.hpp"
 
 #include <memory>
 #include <queue>
@@ -60,13 +61,13 @@ private:
     PulseTrain chord_switch;
     PulseDelay chord_switch_del;
     Toggle chord_toggle;
+    Stopwatch env_pos;
+    Stopwatch pos;
     std::queue<samp_t>::size_type delay_len = std::round(sr * 4.2);
     Synth::samp_t max_amp = 0.0;
     //double pos = 0.0; // in the long run maybe not
     //double tick_len;
     //double env_pos = 0.0;
-    ticks posd {0};
-    ticks env_posd {0};
     unsigned samps_to_wait = sr * 0;
     const std::vector<std::tuple<Curve, double>>* cfs = &cs1_low;
     bool high_chd = false;

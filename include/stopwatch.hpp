@@ -5,10 +5,21 @@
 
 class Stopwatch {
 public:
-    Stopwatch();
+    void update();
+    void reset();
+
+    ticks  get()  const { return pos; }
+    time_f getf() const { return time_f(pos); }
+
+    operator ticks()  const { return get(); }
+    operator time_f() const { return getf(); }
+
+    double operator*(double x) { return getf().count() * x; }
+    bool   operator<(double x) { return getf().count() < x; }
+    bool   operator>(double x) { return getf().count() > x; }
 
 private:
-    time_f pos {0};
+    ticks pos {0};
 };
 
 #endif

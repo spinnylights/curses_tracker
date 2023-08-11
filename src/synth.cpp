@@ -145,8 +145,6 @@ Synth::stereo_sample Synth::sample()
         return {out, out};
     }
 
-    double pos = std::chrono::duration<double>(posd).count();
-
     constexpr double lfo_rate = 1.0 / 1.75;
     //constexpr double lfo_rate = (M_PI) / (2*M_E);
     double lfo_sig = sine.get(pos*lfo_rate);
@@ -159,10 +157,10 @@ Synth::stereo_sample Synth::sample()
 
     // signals (start)
 
-    chord_switch.update(posd);
+    chord_switch.update(pos);
 
     chord_switch_del.length(tics(ramp_time_2));
-    chord_switch_del.update(chord_switch.get(), posd);
+    chord_switch_del.update(chord_switch.get(), pos);
 
     chord_toggle.update(chord_switch.get());
     chord_switch.rate(tics(chord_toggle.get(4.0, 1.0)));
@@ -170,11 +168,11 @@ Synth::stereo_sample Synth::sample()
     // signals (end)
 
     if (chord_switch.get()) {
-        env_posd = ticks(0);
+        env_pos.reset();
     }
 
     if (shut_down_started && shutting_down == false) {
-        env_posd = ticks(0);
+        env_pos.reset();
         shutting_down = true;
     }
 
@@ -187,16 +185,14 @@ Synth::stereo_sample Synth::sample()
     for (auto&& cf : *cfs) {
         if (high_chd) {
 
-            out += std::get<0>(cf).get(std::get<1>(cf)*pos)
+            out += std::get<0>(cf).get(pos*std::get<1>(cf))
                    //;
                    * 0.9
-                   + std::get<0>(cs2_2_high.at(i)).get(std::get<1>(cs2_2_high.at(i))*pos) * 0.1;
+                   + std::get<0>(cs2_2_high.at(i)).get(pos*std::get<1>(cs2_2_high.at(i))) * 0.1;
         } else {
-            out += std::get<0>(cf).get(std::get<1>(cf)*pos);
+            out += std::get<0>(cf).get(pos*std::get<1>(cf));
         }
     }
-
-    double env_pos = std::chrono::duration<double>(env_posd).count();
 
     double env_seek;
     double env_amp;
@@ -290,8 +286,8 @@ Synth::stereo_sample Synth::sample()
     left_out *= final_amp_adj;
     right_out *= final_amp_adj;
 
-    posd += ticks_per_samp;
-    env_posd += ticks_per_samp;
+    pos.update();
+    env_pos.update();
     //pos += ticks_per_samp*tick_len;
     //env_pos += ticks_per_samp*tick_len;
 
