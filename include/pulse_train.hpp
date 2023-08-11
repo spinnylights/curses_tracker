@@ -15,7 +15,6 @@ public:
     void   rate(ticks nrate);
 
 private:
-    ticks sampr;
     ticks rte;
     bool on;
 };
