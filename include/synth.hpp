@@ -71,7 +71,8 @@ private:
     //double pos = 0.0; // in the long run maybe not
     //double tick_len;
     //double env_pos = 0.0;
-    unsigned samps_to_wait = sr;
+    //unsigned samps_to_wait = sr * 10;
+    unsigned samps_to_wait = 0;
     bool high_chd = false;
     bool high_chd_seq = false;
     bool shut_down_started = false;

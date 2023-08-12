@@ -121,12 +121,40 @@ int main(int argc, char* argv[])
             int ccvn_col  = 20;
             int ccvn2_col = 4;
 
+            //if (syn->high_chord()) {
+            //    if (syn->high_chord_seq()) {
+            //        ccvn_col  = 4;
+            //        ccvn2_col = 21;
+            //    } else {
+            //        ccvn_col  = 32;
+            //        ccvn2_col = 82;
+            //    }
+            //} else {
+            //    if (syn->high_chord_seq()) {
+            //        ccvn_col  = 31;
+            //        ccvn2_col = 22;
+            //    } else {
+            //        ccvn_col  = 20;
+            //        ccvn2_col = 32;
+            //    }
+            //}
+
             if (syn->high_chord()) {
-                ccvn_col  = 4;
-                ccvn2_col = 21;
+                if (syn->high_chord_seq()) {
+                    ccvn_col  = 12;
+                    ccvn2_col = 21;
+                } else {
+                    ccvn_col  = 32;
+                    ccvn2_col = 82;
+                }
             } else {
-                ccvn_col  = 20;
-                ccvn2_col = 4;
+                if (syn->high_chord_seq()) {
+                    ccvn_col  = (28*63);
+                    ccvn2_col = (58*63) + 0;
+                } else {
+                    ccvn_col  = (14*63) + 63;
+                    ccvn2_col = (63*63) + 8;
+                }
             }
 
             constexpr int div = 2;

@@ -5,46 +5,137 @@
 
 #include <termios.h>
 
+#include <fstream>
+
+struct rgbcol {
+    short r;
+    short g;
+    short b;
+};
+
+static constexpr std::array<struct rgbcol, 64> rgbcols {
+    rgbcol {0, 0, 0},
+    rgbcol {0, 0, 334},
+    rgbcol {0, 334, 0},
+    rgbcol {334, 0, 0},
+    rgbcol {0, 0, 667},
+    rgbcol {0, 667, 0},
+    rgbcol {667, 0, 0},
+    rgbcol {0, 334, 334},
+    rgbcol {334, 0, 334},
+    rgbcol {334, 334, 0},
+    rgbcol {0, 0, 1000},
+    rgbcol {0, 1000, 0},
+    rgbcol {1000, 0, 0},
+    rgbcol {0, 334, 667},
+    rgbcol {0, 667, 334},
+    rgbcol {334, 0, 667},
+    rgbcol {334, 667, 0},
+    rgbcol {667, 0, 334},
+    rgbcol {667, 334, 0},
+    rgbcol {334, 334, 334},
+    rgbcol {0, 334, 1000},
+    rgbcol {0, 667, 667},
+    rgbcol {0, 1000, 334},
+    rgbcol {334, 0, 1000},
+    rgbcol {334, 1000, 0},
+    rgbcol {667, 0, 667},
+    rgbcol {667, 667, 0},
+    rgbcol {1000, 0, 334},
+    rgbcol {1000, 334, 0},
+    rgbcol {334, 334, 667},
+    rgbcol {334, 667, 334},
+    rgbcol {667, 334, 334},
+    rgbcol {0, 667, 1000},
+    rgbcol {0, 1000, 667},
+    rgbcol {667, 0, 1000},
+    rgbcol {667, 1000, 0},
+    rgbcol {1000, 0, 667},
+    rgbcol {1000, 667, 0},
+    rgbcol {334, 334, 1000},
+    rgbcol {334, 667, 667},
+    rgbcol {334, 1000, 334},
+    rgbcol {667, 334, 667},
+    rgbcol {667, 667, 334},
+    rgbcol {1000, 334, 334},
+    rgbcol {0, 1000, 1000},
+    rgbcol {1000, 0, 1000},
+    rgbcol {1000, 1000, 0},
+    rgbcol {334, 667, 1000},
+    rgbcol {334, 1000, 667},
+    rgbcol {667, 334, 1000},
+    rgbcol {667, 667, 667},
+    rgbcol {667, 1000, 334},
+    rgbcol {1000, 334, 667},
+    rgbcol {1000, 667, 334},
+    rgbcol {334, 1000, 1000},
+    rgbcol {667, 667, 1000},
+    rgbcol {667, 1000, 667},
+    rgbcol {1000, 334, 1000},
+    rgbcol {1000, 667, 667},
+    rgbcol {1000, 1000, 334},
+    rgbcol {667, 1000, 1000},
+    rgbcol {1000, 667, 1000},
+    rgbcol {1000, 1000, 667},
+    rgbcol {1000, 1000, 1000},
+};
+
 Curses::Curses()
 {
     initscr();
 
     start_color();
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    init_color(20, 1000, 350, 150);
-    short grey = 200;
-    init_color(30, grey, grey, grey);
-    init_pair(2, COLOR_WHITE, COLOR_BLACK);
-    init_pair(3, COLOR_CYAN, COLOR_BLACK);
-    init_pair(4, COLOR_MAGENTA, 30);
 
-    init_color(50, 1000, 1000, 100);
-    init_color(51, 1000, 1000, 380);
-    init_color(52, 1000, 1000, 460);
-    init_color(53, 1000, 1000, 550);
-    init_color(54, 1000, 1000, 630);
-    init_color(55, 1000, 1000, 750);
-    init_color(56, 1000, 1000, 800);
-    init_color(57, 1000, 1000, 900);
-    init_pair(80, 50, COLOR_BLACK);
-    init_pair(81, 51, COLOR_BLACK);
-    init_pair(82, 52, COLOR_BLACK);
-    init_pair(83, 53, COLOR_BLACK);
-    init_pair(84, 54, COLOR_BLACK);
-    init_pair(85, 55, COLOR_BLACK);
-    init_pair(86, 56, COLOR_BLACK);
-    init_pair(87, 57, COLOR_BLACK);
+    for (size_t i = 0; i < rgbcols.size(); ++i) {
+        init_color(i, rgbcols[i].r, rgbcols[i].g, rgbcols[i].b);
+    }
 
-    init_color(31, 600, 250, 50);
-    init_color(32, 575, 225, 25);
+    for (size_t i = 0; i < rgbcols.size(); ++i) {
+        for (size_t j = 0; j < rgbcols.size(); ++j) {
+            init_pair(i*rgbcols.size() + j + 1, i, j);
+        }
+    }
 
-    init_pair(20, COLOR_YELLOW, COLOR_BLUE);
-    init_pair(21, COLOR_CYAN, 31);
-    init_pair(22, COLOR_CYAN, 32);
+    //std::ofstream log;
+    //log.open("color.txt", std::ios::out);
+    //log << "colors: " << COLORS << "\n";
+    //log << "pairs:  " << COLOR_PAIRS << "\n";
+    //log.close();
+    //init_color(20, 1000, 350, 150);
+    //short grey = 200;
+    //init_color(30, grey, grey, grey);
+
+    //init_color(50, 1000, 1000, 100);
+    //init_color(51, 1000, 1000, 380);
+    //init_color(52, 1000, 1000, 460);
+    //init_color(53, 1000, 1000, 550);
+    //init_color(54, 1000, 1000, 630);
+    //init_color(55, 1000, 1000, 750);
+    //init_color(56, 1000, 1000, 800);
+    //init_color(57, 1000, 1000, 900);
+
+    //init_color(31, 600, 250, 50);
+    //init_color(32, 575, 225, 25);
+
+    //init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    //init_pair(20, COLOR_YELLOW, COLOR_BLUE);
+    //init_pair(21, COLOR_CYAN, 31);
+    //init_pair(22, COLOR_CYAN, 32);
+    //init_pair(2, COLOR_WHITE, COLOR_BLACK);
+    //init_pair(3, COLOR_CYAN, COLOR_BLACK);
+    //init_pair(4, COLOR_MAGENTA, 30);
+    //init_pair(80, 50, COLOR_BLACK);
+    //init_pair(81, 51, COLOR_BLACK);
+    //init_pair(82, 52, COLOR_BLACK);
+    //init_pair(83, 53, COLOR_BLACK);
+    //init_pair(84, 54, COLOR_BLACK);
+    //init_pair(85, 55, COLOR_BLACK);
+    //init_pair(86, 56, COLOR_BLACK);
+    //init_pair(87, 57, COLOR_BLACK);
 
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
-    halfdelay(1);
+    halfdelay(7);
     noecho();
     curs_set(0);
 
