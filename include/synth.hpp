@@ -11,6 +11,7 @@
 #include "stopwatch.hpp"
 #include "sequencer.hpp"
 #include "wavetable.hpp"
+#include "latch.hpp"
 
 #include <memory>
 #include <queue>
@@ -32,6 +33,7 @@ public:
     bool shutdown();
 
     bool high_chord() const { return high_chd; }
+    bool high_chord_seq() const { return high_chd_seq; }
     bool quiet() const { return quet; }
     bool amp_ceil() const { return max_amp; }
 
@@ -57,6 +59,8 @@ private:
     PulseTrain chord_switch;
     PulseDelay chord_switch_del;
     Toggle chord_toggle;
+    Toggle chord_del_toggle;
+    Latch<bool> chord_del_latch;
     Stopwatch env_pos;
     Stopwatch pos;
     Sequencer seq;
@@ -69,6 +73,7 @@ private:
     //double env_pos = 0.0;
     unsigned samps_to_wait = sr;
     bool high_chd = false;
+    bool high_chd_seq = false;
     bool shut_down_started = false;
     bool shutting_down = false;
     bool finished = false;

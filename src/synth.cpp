@@ -42,7 +42,8 @@ Synth::Synth(Curves& cs,
     const Note freq_root {4, 0, 0};
     seq.add(0, ticks(0), freq_root);
     seq.add(1, ticks(0), freq_root + Note(0, 13));
-    seq.add(2, ticks(0), freq_root + Note(0, 44));
+    //seq.add(2, ticks(0), freq_root + Note(0, 44));
+    seq.add(2, ticks(0), freq_root + Note(0, 34));
     seq.add(3, ticks(0), freq_root + Note(0, 10));
     seq.add(4, ticks(0), freq_root + Note(1,  9));
     seq.add(5, ticks(0), Note(Note::off));
@@ -52,7 +53,8 @@ Synth::Synth(Curves& cs,
     const Note freq_2_root {3, 30};
     seq.add(0, ticks(1), freq_2_root);
     seq.add(1, ticks(1), freq_2_root + Note(0, 23));
-    seq.add(2, ticks(1), freq_2_root + Note(0, 52));
+    //seq.add(2, ticks(1), freq_2_root + Note(0, 52));
+    seq.add(2, ticks(1), freq_2_root + Note(0, 42));
     seq.add(3, ticks(1), freq_2_root + Note(1, 24));
     seq.add(4, ticks(1), freq_2_root + Note(1, 46));
     seq.add(5, ticks(1), freq_2_root + Note(1,  3));
@@ -75,7 +77,10 @@ Synth::stereo_sample Synth::sample()
         return {out, out};
     }
 
-    constexpr double lfo_rate = 1.0 / 1.75;
+    //constexpr double lfo_rate = 1.0 / 1.75;
+    constexpr double lfo_rate = 4.0 / 9.0;
+    //constexpr double lfo_rate = 2.0 / 3.0;
+    //constexpr double lfo_rate = 4.0 / 7.0;
     //constexpr double lfo_rate = (M_PI) / (2*M_E);
     double lfo_sig = sine.get(pos*lfo_rate);
     double ramp_time = 0.3333 + 0.2*lfo_sig;
@@ -93,14 +98,17 @@ Synth::stereo_sample Synth::sample()
     chord_switch_del.update(chord_switch.get(), pos);
 
     chord_toggle.update(chord_switch.get());
-    chord_switch.rate(tics(chord_toggle.get(4.0, 1.0)));
+    chord_switch.rate(tics(chord_toggle.get(1.5, 1.0)));
 
     env_pos.reset(chord_switch.get());
 
     high.update(pos);
     low.update(pos);
 
-    // signals (end)
+    chord_del_latch.update(chord_switch_del.get(),
+                           chord_toggle.get(false, true));
+
+    // signals (temp end)
 
     // this is sort of a placeholder hack
     if (shut_down_started && shutting_down == false) {
@@ -108,12 +116,17 @@ Synth::stereo_sample Synth::sample()
         shutting_down = true;
     }
 
-    if (chord_switch_del.get()) {
-        seq.setpos(chord_toggle.get(ticks(0), ticks(1)));
-        high_chd = chord_toggle.get(false, true);
-    }
+    // signals (continue)
 
-    if (high_chd) {
+    high_chd = chord_del_latch.get();
+    chord_del_toggle.update(chord_del_latch.get());
+    seq.setpos(chord_del_toggle.get(ticks(0), ticks(1)));
+    high_chd_seq = chord_del_toggle.get(false, true);
+    //seq.setpos(ticks(chord_del_latch.get()));
+
+    // signals (end)
+
+    if (chord_del_latch.get()) {
         for (Sequencer::track_ndx i = 0; i < 5; ++i) {
             high.note(seq.get_note(i));
             out += high.get() * 0.9;
