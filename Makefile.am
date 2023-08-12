@@ -20,6 +20,8 @@ curses_tracker_SOURCES = \
 	src/pulse_delay.cpp \
 	src/toggle.cpp \
 	src/stopwatch.cpp \
+	src/wavetable.cpp \
+	src/sequencer.cpp \
 	src/audio_sdl.cpp
 
 tests_CXXFLAGS = $(curses_tracker_CXXFLAGS) -I/usr/include/doctest/ -I/usr/local/include/doctest

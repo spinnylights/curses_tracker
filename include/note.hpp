@@ -14,6 +14,7 @@ public:
     typedef int_fast32_t  signed_pc_t;
     typedef double        frac_t;
     typedef double        freq_t;
+    typedef freq_t        sig_t;
 
     static constexpr pc_t   edo        = 53;
     static constexpr freq_t base_pitch = 20.0;
@@ -27,13 +28,19 @@ public:
     static freq_t edo_pitch(octave_t, pc_t);
     static freq_t edo_pitch(octave_t, pc_t, frac_t);
 
+    enum status {
+        off
+    };
+
     Note() = default;
     Note(octave_t, pc_t, frac_t f = 0);
+    Note(enum status);
 
     octave_t octave() const { return oct; }
     pc_t     pitchc() const { return pc; }
     frac_t   frac()   const { return fr; }
     freq_t   freq()   const { return hz; }
+    sig_t    get()    const { return freq(); }
 
     std::string pch() const;
 
@@ -43,6 +50,11 @@ public:
     Note operator-(const Note&) const;
 
     ~Note() = default;
+
+    bool is_off() const;
+
+    Note floor() const;
+    Note ceil() const;
 
 private:
     octave_t oct;

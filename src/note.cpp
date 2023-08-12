@@ -10,6 +10,15 @@ Note::Note(octave_t octave, pc_t pitchc, frac_t frac)
     : oct {octave}, pc {pitchc}, fr {frac}, hz {edo_pitch(octave, pitchc, frac)}
 {}
 
+Note::Note(enum Note::status)
+    : oct {0}, pc {0}, fr {0.0}, hz {0.0}
+{}
+
+bool Note::is_off() const
+{
+    return hz == 0.0;
+}
+
 const std::array<Note::freq_t, Note::steps_cnt> Note::edo_pitches = []
 {
     std::array<freq_t, steps_cnt> ep {};
@@ -113,3 +122,16 @@ Note Note::operator-(const Note& nn) const
     return *this + (-(nn.octave()*edo + nn.pitchc() + nn.frac()));
 }
 
+Note Note::floor() const
+{
+    return Note(octave(), pitchc());
+}
+
+Note Note::ceil() const
+{
+    if (octave() == octave_max) {
+        return *this;
+    } else {
+        return *this + Note(0, 1);
+    }
+}

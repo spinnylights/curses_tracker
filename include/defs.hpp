@@ -8,7 +8,7 @@
 template<std::intmax_t N>
 using time_samps = std::chrono::duration<std::uintmax_t, std::ratio<1,N>>;
 
-typedef std::chrono::duration<double, std::ratio<1,1>> time_f;
+typedef std::chrono::duration<double> time_f;
 
 template<std::intmax_t N>
 constexpr time_f samp_len_f = time_f(time_samps<N>(1));

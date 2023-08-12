@@ -111,6 +111,16 @@ Curve::Curve(struct args a)
     }
 }
 
+Curve::Curve(std::string desc)
+{
+    struct args a {};
+    db   = a.db;
+    id   = a.id;
+    name = a.name;
+
+    parse(desc);
+}
+
 enum class lex {
     segs, soid, soidser, nsqrd, num, no_match
 };

@@ -9,6 +9,8 @@
 #include "toggle.hpp"
 #include "defs.hpp"
 #include "stopwatch.hpp"
+#include "sequencer.hpp"
+#include "wavetable.hpp"
 
 #include <memory>
 #include <queue>
@@ -34,12 +36,6 @@ public:
     bool amp_ceil() const { return max_amp; }
 
 private:
-    std::vector<std::tuple<Curve, double>> cs1_low;
-    std::vector<std::tuple<Curve, double>> cs2_low;
-    std::vector<std::tuple<Curve, double>> cs2_2_low;
-    std::vector<std::tuple<Curve, double>> cs1_high;
-    std::vector<std::tuple<Curve, double>> cs2_high;
-    std::vector<std::tuple<Curve, double>> cs2_2_high;
     Curve upramp;
     Curve downupramp;
     Curve downramp;
@@ -63,13 +59,15 @@ private:
     Toggle chord_toggle;
     Stopwatch env_pos;
     Stopwatch pos;
+    Sequencer seq;
+    Wavetable high;
+    Wavetable low;
     std::queue<samp_t>::size_type delay_len = std::round(sr * 4.2);
     Synth::samp_t max_amp = 0.0;
     //double pos = 0.0; // in the long run maybe not
     //double tick_len;
     //double env_pos = 0.0;
-    unsigned samps_to_wait = sr * 0;
-    const std::vector<std::tuple<Curve, double>>* cfs = &cs1_low;
+    unsigned samps_to_wait = sr;
     bool high_chd = false;
     bool shut_down_started = false;
     bool shutting_down = false;

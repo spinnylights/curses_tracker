@@ -158,6 +158,8 @@ public:
         std::string              name        = "";
     };
 
+    Curve(std::string desc);
+
     Curve(struct args);
 
     Curve& parse(std::string stmt);

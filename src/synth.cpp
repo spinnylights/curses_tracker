@@ -3,76 +3,6 @@
 
 #include <fstream>
 
-//const std::vector<double> freqs {
-//    Note(4, 0, 0).freq(),  // -0.13, -0.44, -1.09
-//    Note(4, 13, 0).freq(), // +0.13, +31
-//    Note(4, 44, 0).freq(),
-//    Note(5, 9, 0).freq(),
-//};
-
-const Note freq_root {4, 0, 0};
-
-const std::vector<double> freqs {
-    freq_root.freq(),  // -0.13, -0.44, -1.09
-    (freq_root + Note(0, 13)).freq(), // +0.13, +31
-    (freq_root + Note(0, 44)).freq(),
-    (freq_root + Note(0, 10)).freq(),
-    (freq_root + Note(1,  9)).freq(),
-};
-
-//const std::vector<double> freqs_2 {
-//    Note(4, 8).freq(),   // 0.31
-//    Note(4, 29).freq(),  // 0.52
-//    Note(3, 30).freq(),  // 0.0
-//    Note(5, 23).freq(),  // 1.46
-//};
-
-//const std::vector<double> freqs_2 {
-//    Note(3, 30).freq(),  // 0.00
-//    Note(4,  8).freq(),  // 0.31
-//    Note(4, 29).freq(),  // 0.52
-//    Note(5, 23).freq(),  // 1.46
-//};
-
-const Note freq_2_root {3, 30};
-
-const std::vector<double> freqs_2 {
-    freq_2_root.freq(),
-    (freq_2_root + Note(0, 23)).freq(),
-    (freq_2_root + Note(0, 52)).freq(),
-    (freq_2_root + Note(1, 24)).freq(),
-    (freq_2_root + Note(1, 46)).freq(),
-    //(freq_2_root + Note(1, 51)).freq(),
-    //(freq_2_root + Note(1, 8)).freq(),
-    //(freq_2_root + Note(1, 6)).freq(),
-    //(freq_2_root + Note(1, 5)).freq(),
-    //(freq_2_root + Note(1, 1)).freq(),
-    //(freq_2_root + Note(2, 0)).freq(),
-};
-
-const std::vector<double> freqs_2_2 {
-    //(freq_2_root + Note(1, 6)).freq(),
-    (freq_2_root + Note(1, 3)).freq(),
-    (freq_2_root + Note(1, 9)).freq(),
-    (freq_2_root + Note(1, 49)).freq(),
-};
-
-//const std::vector<double> freqs {
-//    Note(4, 0, 0).freq(),
-//    Note(4, 9, 0).freq(),
-//    Note(5, 0, 0).freq(),
-//    Note(4, 45, 0).freq(),
-//};
-//
-////const std::vector<double> freqs_2 = freqs;
-//
-//const std::vector<double> freqs_2 {
-//    Note(3, 49, 0).freq(),
-//    Note(4, 40, 0).freq(),
-//    Note(3, 31, 0).freq(),
-//    Note(5, 44, 0).freq(),
-//};
-
 Synth::Synth(Curves& cs,
              std::string curve_desc_low,
              std::string curve_desc_high,
@@ -88,34 +18,10 @@ Synth::Synth(Curves& cs,
       delay_2 {delay_len_2, delay_rate_2},
       delay_3 {delay_len_3, delay_rate_3},
       chord_switch {tics(4.0)},
-      chord_switch_del {tics(0.6666)}
+      chord_switch_del {tics(0.6666)},
+      low {curve_desc_low},
+      high {curve_desc_high}
 {
-    for (auto&& f : freqs) {
-        auto cl = cs.newc();
-        cl.parse(curve_desc_low + " " + std::to_string(f));
-        cs1_low.push_back({std::move(cl), f});
-        auto ch = cs.newc();
-        ch.parse(curve_desc_high + " " + std::to_string(f));
-        cs1_high.push_back({std::move(ch), f});
-    }
-
-    for (auto&& f : freqs_2) {
-        auto cl = cs.newc();
-        cl.parse(curve_desc_low + " " + std::to_string(f));
-        cs2_low.push_back({std::move(cl), f});
-        auto ch = cs.newc();
-        ch.parse(curve_desc_high + " " + std::to_string(f));
-        cs2_high.push_back({std::move(ch), f});
-    }
-
-    for (auto&& f : freqs_2_2) {
-        auto cl = cs.newc();
-        cl.parse(curve_desc_low + " " + std::to_string(f));
-        cs2_2_low.push_back({std::move(cl), f});
-        auto ch = cs.newc();
-        ch.parse(curve_desc_high + " " + std::to_string(f));
-        cs2_2_high.push_back({std::move(ch), f});
-    }
 
     upramp.parse("segs");
     upramp.wrapm(Curve::sticky);
@@ -128,6 +34,30 @@ Synth::Synth(Curves& cs,
     sine.wrapm(Curve::looping);
     delay_2_start_env.parse("segs -3 0 1");
     delay_2_start_env.wrapm(Curve::sticky);
+
+    for (Sequencer::track_ndx i = 0; i < 8; ++i) {
+        seq.add_track();
+    }
+
+    const Note freq_root {4, 0, 0};
+    seq.add(0, ticks(0), freq_root);
+    seq.add(1, ticks(0), freq_root + Note(0, 13));
+    seq.add(2, ticks(0), freq_root + Note(0, 44));
+    seq.add(3, ticks(0), freq_root + Note(0, 10));
+    seq.add(4, ticks(0), freq_root + Note(1,  9));
+    seq.add(5, ticks(0), Note(Note::off));
+    seq.add(6, ticks(0), Note(Note::off));
+    seq.add(7, ticks(0), Note(Note::off));
+
+    const Note freq_2_root {3, 30};
+    seq.add(0, ticks(1), freq_2_root);
+    seq.add(1, ticks(1), freq_2_root + Note(0, 23));
+    seq.add(2, ticks(1), freq_2_root + Note(0, 52));
+    seq.add(3, ticks(1), freq_2_root + Note(1, 24));
+    seq.add(4, ticks(1), freq_2_root + Note(1, 46));
+    seq.add(5, ticks(1), freq_2_root + Note(1,  3));
+    seq.add(6, ticks(1), freq_2_root + Note(1,  9));
+    seq.add(7, ticks(1), freq_2_root + Note(1, 49));
 }
 
 bool Synth::shutdown()
@@ -167,6 +97,9 @@ Synth::stereo_sample Synth::sample()
 
     env_pos.reset(chord_switch.get());
 
+    high.update(pos);
+    low.update(pos);
+
     // signals (end)
 
     // this is sort of a placeholder hack
@@ -176,20 +109,23 @@ Synth::stereo_sample Synth::sample()
     }
 
     if (chord_switch_del.get()) {
-        cfs = chord_toggle.get(&cs1_low, &cs2_high);
+        seq.setpos(chord_toggle.get(ticks(0), ticks(1)));
         high_chd = chord_toggle.get(false, true);
     }
 
-    size_t i = 0;
-    for (auto&& cf : *cfs) {
-        if (high_chd) {
-
-            out += std::get<0>(cf).get(pos*std::get<1>(cf))
-                   //;
-                   * 0.9
-                   + std::get<0>(cs2_2_high.at(i)).get(pos*std::get<1>(cs2_2_high.at(i))) * 0.1;
-        } else {
-            out += std::get<0>(cf).get(pos*std::get<1>(cf));
+    if (high_chd) {
+        for (Sequencer::track_ndx i = 0; i < 5; ++i) {
+            high.note(seq.get_note(i));
+            out += high.get() * 0.9;
+        }
+        for (Sequencer::track_ndx i = 5; i < 8; ++i) {
+            high.note(seq.get_note(i));
+            out += high.get() * 0.1;
+        }
+    } else {
+        for (Sequencer::track_ndx i = 0; i < 5; ++i) {
+            low.note(seq.get_note(i));
+            out += low.get();
         }
     }
 
@@ -212,7 +148,7 @@ Synth::stereo_sample Synth::sample()
         }
     }
 
-    out *= 0.9/freqs.size();
+    out *= 0.9/5; // number of non-supplement tracks...rather a hack
 
     //delay.push(out);
     //delay_2.push(out);
