@@ -42,8 +42,8 @@ Synth::Synth(Curves& cs,
     const Note freq_root {4, 0, 0};
     seq.add(0, ticks(0), freq_root);
     seq.add(1, ticks(0), freq_root + Note(0, 13));
-    //seq.add(2, ticks(0), freq_root + Note(0, 44));
-    seq.add(2, ticks(0), freq_root + Note(0, 34));
+    seq.add(2, ticks(0), freq_root + Note(0, 44));
+    //seq.add(2, ticks(0), freq_root + Note(0, 34));
     seq.add(3, ticks(0), freq_root + Note(0, 10));
     seq.add(4, ticks(0), freq_root + Note(1,  9));
     seq.add(5, ticks(0), Note(Note::off));
@@ -53,8 +53,8 @@ Synth::Synth(Curves& cs,
     const Note freq_2_root {3, 30};
     seq.add(0, ticks(1), freq_2_root);
     seq.add(1, ticks(1), freq_2_root + Note(0, 23));
-    //seq.add(2, ticks(1), freq_2_root + Note(0, 52));
-    seq.add(2, ticks(1), freq_2_root + Note(0, 42));
+    seq.add(2, ticks(1), freq_2_root + Note(0, 52));
+    //seq.add(2, ticks(1), freq_2_root + Note(0, 42));
     seq.add(3, ticks(1), freq_2_root + Note(1, 24));
     seq.add(4, ticks(1), freq_2_root + Note(1, 46));
     seq.add(5, ticks(1), freq_2_root + Note(1,  3));
@@ -77,8 +77,8 @@ Synth::stereo_sample Synth::sample()
         return {out, out};
     }
 
-    //constexpr double lfo_rate = 1.0 / 1.75;
-    constexpr double lfo_rate = 4.0 / 9.0;
+    constexpr double lfo_rate = 1.0 / 1.75;
+    //constexpr double lfo_rate = 4.0 / 9.0;
     //constexpr double lfo_rate = 2.0 / 3.0;
     //constexpr double lfo_rate = 4.0 / 7.0;
     //constexpr double lfo_rate = (M_PI) / (2*M_E);
@@ -98,7 +98,8 @@ Synth::stereo_sample Synth::sample()
     chord_switch_del.update(chord_switch.get(), pos);
 
     chord_toggle.update(chord_switch.get());
-    chord_switch.rate(tics(chord_toggle.get(1.5, 1.0)));
+    chord_switch.rate(tics(chord_toggle.get(4.0, 1.0)));
+    //chord_switch.rate(tics(chord_toggle.get(1.5, 1.0)));
 
     env_pos.reset(chord_switch.get());
 
@@ -120,9 +121,9 @@ Synth::stereo_sample Synth::sample()
 
     high_chd = chord_del_latch.get();
     chord_del_toggle.update(chord_del_latch.get());
-    seq.setpos(chord_del_toggle.get(ticks(0), ticks(1)));
+    //seq.setpos(chord_del_toggle.get(ticks(0), ticks(1)));
     high_chd_seq = chord_del_toggle.get(false, true);
-    //seq.setpos(ticks(chord_del_latch.get()));
+    seq.setpos(ticks(chord_del_latch.get()));
 
     // signals (end)
 
