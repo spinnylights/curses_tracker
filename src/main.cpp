@@ -113,6 +113,7 @@ int main(int argc, char* argv[])
             auto start = clock::now();
 
             cur.say_hello(aud);
+            cur.print_color_chart();
 
             static constexpr int ccv_w = 130;
             int mh = 60;

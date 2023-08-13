@@ -20,6 +20,7 @@ public:
 
     void getkey();
     void update_winsz();
+    void print_color_chart();
 
     unsigned short w() { return ws.ws_col; }
     unsigned short h() { return ws.ws_row; }

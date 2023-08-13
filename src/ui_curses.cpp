@@ -6,6 +6,7 @@
 #include <termios.h>
 
 #include <fstream>
+#include <sstream>
 
 struct rgbcol {
     short r;
@@ -86,52 +87,22 @@ Curses::Curses()
 
     start_color();
 
+    reset_color_pairs();
+
     for (size_t i = 0; i < rgbcols.size(); ++i) {
         init_color(i, rgbcols[i].r, rgbcols[i].g, rgbcols[i].b);
     }
 
-    for (size_t i = 0; i < rgbcols.size(); ++i) {
-        for (size_t j = 0; j < rgbcols.size(); ++j) {
-            init_pair(i*rgbcols.size() + j + 1, i, j);
+    static constexpr size_t col_cnt = rgbcols.size();
+
+    for (size_t j = 0; j < 4; ++j) {
+        for (size_t i = 0; i < rgbcols.size(); ++i) {
+            init_pair(i + 1 + rgbcols.size()*j,
+                      ((rgbcols.size() - 1 - i) + (rgbcols.size()*j/4))
+                          % rgbcols.size(),
+                      i);
         }
     }
-
-    //std::ofstream log;
-    //log.open("color.txt", std::ios::out);
-    //log << "colors: " << COLORS << "\n";
-    //log << "pairs:  " << COLOR_PAIRS << "\n";
-    //log.close();
-    //init_color(20, 1000, 350, 150);
-    //short grey = 200;
-    //init_color(30, grey, grey, grey);
-
-    //init_color(50, 1000, 1000, 100);
-    //init_color(51, 1000, 1000, 380);
-    //init_color(52, 1000, 1000, 460);
-    //init_color(53, 1000, 1000, 550);
-    //init_color(54, 1000, 1000, 630);
-    //init_color(55, 1000, 1000, 750);
-    //init_color(56, 1000, 1000, 800);
-    //init_color(57, 1000, 1000, 900);
-
-    //init_color(31, 600, 250, 50);
-    //init_color(32, 575, 225, 25);
-
-    //init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    //init_pair(20, COLOR_YELLOW, COLOR_BLUE);
-    //init_pair(21, COLOR_CYAN, 31);
-    //init_pair(22, COLOR_CYAN, 32);
-    //init_pair(2, COLOR_WHITE, COLOR_BLACK);
-    //init_pair(3, COLOR_CYAN, COLOR_BLACK);
-    //init_pair(4, COLOR_MAGENTA, 30);
-    //init_pair(80, 50, COLOR_BLACK);
-    //init_pair(81, 51, COLOR_BLACK);
-    //init_pair(82, 52, COLOR_BLACK);
-    //init_pair(83, 53, COLOR_BLACK);
-    //init_pair(84, 54, COLOR_BLACK);
-    //init_pair(85, 55, COLOR_BLACK);
-    //init_pair(86, 56, COLOR_BLACK);
-    //init_pair(87, 57, COLOR_BLACK);
 
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
@@ -243,8 +214,40 @@ void Curses::update_winsz()
     win = newwin(h(), w(), 0, 0);
 }
 
+void Curses::print_color_chart()
+{
+    static constexpr short text_cpair = 0xe5;
+    for (unsigned i = 0; i < rgbcols.size() / 16; ++i) {
+        wmove(win, 0, i*16);
+        wattron(win, COLOR_PAIR(text_cpair));
+        wprintw(win, "%d", i);
+    }
+
+    for (unsigned i = 1; i <= rgbcols.size(); ++i) {
+        wmove(win, 1, i - 1);
+        wattron(win, COLOR_PAIR(text_cpair));
+        wprintw(win, "%X", (i - 1) % 16);
+    }
+
+    for (size_t j = 0; j < 4; ++j) {
+        for (size_t i = 1; i <= rgbcols.size(); ++i) {
+            wmove(win, j+2, i - 1);
+            wattron(win, COLOR_PAIR(i + rgbcols.size()*j));
+            waddch(win, 'X');
+        }
+        wmove(win, j+2, rgbcols.size());
+        wattron(win, COLOR_PAIR(text_cpair));
+        wprintw(win, "%02X", static_cast<unsigned>(j)*64);
+    }
+
+    wmove(win, 6, 0);
+    wattron(win, COLOR_PAIR(text_cpair));
+    wprintw(win, "add one (curses reserves pair 0)");
+}
+
 Curses::~Curses() noexcept
 {
+    reset_color_pairs();
     delwin(win);
     endwin();
 }
