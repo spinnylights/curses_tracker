@@ -96,6 +96,12 @@ int main(int argc, char* argv[])
 
     Curses cur;
 
+    //std::ofstream log;
+    //log.open("wh.txt", std::ios::app);
+    //log << "w: " << cur.w() << "\n"
+    //    << "h: " << cur.h() << "\n";
+    //log.close();
+
     static const std::string prog_name = "curses_tracker";
 
     try {
@@ -115,8 +121,10 @@ int main(int argc, char* argv[])
             cur.say_hello(aud);
             cur.print_color_chart();
 
-            static constexpr int ccv_w = 130;
-            int mh = 60;
+            //static constexpr int ccv_w = 130;
+            int ccv_w = COLS * 11 / 25;
+            //int mh = 60;
+            int mh = LINES * 3 / 4;
             int mw = ccv_w * 2;
 
             int ccvn_col  = 20;
@@ -160,14 +168,14 @@ int main(int argc, char* argv[])
 
             constexpr int div = 2;
             CursesCurveView ccvn (*cn,
-                                  60,
+                                  mh,
                                   ccv_w*2/div,
                                   (LINES - mh)/2,
                                   (COLS - mw)/2,
                                   ccvn_col);
 
             CursesCurveView ccvn2 (*cn2,
-                                   60,
+                                   mh,
                                    ccv_w*2/div,
                                    (LINES - mh)/2,
                                    (COLS - mw)/2 + ccv_w*2/div,
