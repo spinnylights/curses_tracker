@@ -41,4 +41,13 @@ AM_INIT_AUTOMAKE([subdir-objects foreign])
 
 AC_CONFIG_FILES([Makefile])
 
+AC_ARG_ENABLE([tests],
+              AC_HELP_STRING([--enable-tests],[Build the test suite (in ./tests) [default=no]]),
+              [case "${enableval}" in
+                yes) tests=true ;;
+                no)  tests=false ;;
+                *) AC_MSG_ERROR([base value ${enableval} for --build-tests]) ;;
+              esac], [tests=false])
+AM_CONDITIONAL([TESTS], [test x$tests = xtrue])
+
 AC_OUTPUT

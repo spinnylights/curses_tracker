@@ -1,6 +1,9 @@
-bin_PROGRAMS = curses_tracker tests
+bin_PROGRAMS = curses_tracker
+if TESTS
+bin_PROGRAMS += tests
+endif
 
-curses_tracker_CXXFLAGS = -I$(top_srcdir)/include $(SDL_CFLAGS) $(CURSES_CFLAGS) $(SQLITE3_CFLAGS)
+curses_tracker_CXXFLAGS = -I$(top_srcdir)/include/$(PACKAGE_NAME) $(SDL_CFLAGS) $(CURSES_CFLAGS) $(SQLITE3_CFLAGS)
 curses_tracker_LDADD = $(SDL_LIBS) $(CURSES_LIBS) $(SQLITE3_LDFLAGS)
 curses_tracker_SOURCES = \
 	src/ui_curses.cpp \
