@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([curses_tracker], [0.0.1], [bugs@milky.flowers])
+AC_INIT([curses_tracker], [0.0.4], [bugs@milky.flowers])
 
 AC_CONFIG_MACRO_DIR([m4])
 
